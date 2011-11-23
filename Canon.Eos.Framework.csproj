@@ -40,8 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EosAssert.cs" />
     <Compile Include="EosCamera.cs" />
     <Compile Include="EosCameraCollection.cs" />
+    <Compile Include="EosCameraSavePicturesTo.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
     <Compile Include="EosDisposable.cs" />

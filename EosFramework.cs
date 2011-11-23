@@ -16,9 +16,7 @@ namespace Canon.Eos.Framework
                 {
                     try
                     {
-                        var result = EDSDK.EdsInitializeSDK();
-                        if (result != EDSDK.EDS_ERR_OK)
-                            throw new EosException(result, "Failed to initialize the SDK.");
+                        EosAssert.NotOk(EDSDK.EdsInitializeSDK(), "Failed to initialize the SDK.");                        
                     }
                     catch (EosException)
                     {
@@ -26,7 +24,7 @@ namespace Canon.Eos.Framework
                     }
                     catch (Exception ex)
                     {
-                        throw new EosException(-1, "Failed to initialize the SDK.", ex);
+                        EosAssert.NotOk(0xFFFFFFFF, "Failed to initialize the SDK.", ex);
                     }
                 }
                 ++__referenceCount;
