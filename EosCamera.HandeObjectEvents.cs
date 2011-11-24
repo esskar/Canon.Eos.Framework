@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using EDSDKLib;
 
 namespace Canon.Eos.Framework
@@ -35,6 +36,36 @@ namespace Canon.Eos.Framework
         
         private void OnObjectEventDirItemRequestTransfer(IntPtr sender, IntPtr context)
         {
+            var stream = IntPtr.Zero;
+            try
+            {
+                EDSDK.EdsDirectoryItemInfo directoryItemInfo;
+                EosAssert.NotOk(EDSDK.EdsGetDirectoryItemInfo(sender, out directoryItemInfo), "Failed to get directory item info.");
+
+                Console.WriteLine("FileName: " + directoryItemInfo.szFileName);
+                Console.WriteLine("IsFolder: " + directoryItemInfo.isFolder);
+                Console.WriteLine("Size:     " + directoryItemInfo.Size);
+
+                var location = Path.Combine(_picturePath ?? Environment.CurrentDirectory, directoryItemInfo.szFileName);
+
+                EosAssert.NotOk(EDSDK.EdsCreateFileStream(location, EDSDK.EdsFileCreateDisposition.CreateAlways, EDSDK.EdsAccess.ReadWrite, out stream), "Failed to create file stream");                
+                EosAssert.NotOk(EDSDK.EdsDownload(sender, directoryItemInfo.Size, stream), "Failed to create file stream");
+                EosAssert.NotOk(EDSDK.EdsDownloadComplete(sender), "Failed to complete download");
+            }
+            catch (EosException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new EosException(-1, "Unexpected exception while downloading.", ex);
+            }
+            finally
+            {
+                EDSDK.EdsRelease(sender);
+                if (stream != IntPtr.Zero)
+                    EDSDK.EdsRelease(stream);
+            }
         }
         
         private void OnObjectEventDirItemRequestTransferDt(IntPtr sender, IntPtr context)
@@ -55,6 +86,7 @@ namespace Canon.Eos.Framework
 
         private uint HandleObjectEvent(uint objectEvent, IntPtr sender, IntPtr context)
         {
+            Console.WriteLine("HandleObjectEvent fired: " + objectEvent);
             switch (objectEvent)
             {
                 case EDSDK.ObjectEvent_VolumeInfoChanged:

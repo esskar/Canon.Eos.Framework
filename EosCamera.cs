@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 
 using EDSDKLib;
@@ -10,7 +11,8 @@ namespace Canon.Eos.Framework
     {
         private IntPtr _camera;
         private EDSDK.EdsDeviceInfo _deviceInfo;
-        private bool _sessionOpened = false;
+        private bool _sessionOpened;
+        private string _picturePath;
 
         internal EosCamera(IntPtr camera)
         {
@@ -45,6 +47,14 @@ namespace Canon.Eos.Framework
                     EosAssert.NotOk(EDSDK.EdsSetCapacity(_camera, capacity), "Failed to set capacity.");
                 });
             }
+        }
+
+        public void SavePicturesToHostLocation(string path)
+        {
+            _picturePath = path;
+            if (!Directory.Exists(_picturePath))
+                Directory.CreateDirectory(_picturePath);
+            this.SavePicturesTo = EosCameraSavePicturesTo.Host;                        
         }
 
         public void TakePicture()

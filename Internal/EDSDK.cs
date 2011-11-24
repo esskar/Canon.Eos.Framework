@@ -1497,7 +1497,7 @@ namespace EDSDKLib
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsCreateStreamEx( 
+        public extern static uint EdsCreateFileStreamEx( 
            string                       inFileName,
            EdsFileCreateDisposition     inCreateDisposition,
            EdsAccess                    inDesiredAccess,

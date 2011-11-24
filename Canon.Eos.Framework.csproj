@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="EosAssert.cs" />
     <Compile Include="EosCamera.cs" />
+    <Compile Include="EosCamera.HandePropertyEvents.cs" />
+    <Compile Include="EosCamera.HandeStateEvents.cs" />
     <Compile Include="EosCameraCollection.cs" />
     <Compile Include="EosCamera.HandeObjectEvents.cs" />
     <Compile Include="EosCameraSavePicturesTo.cs" />
