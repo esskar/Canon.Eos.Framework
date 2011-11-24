@@ -43,6 +43,7 @@
     <Compile Include="EosAssert.cs" />
     <Compile Include="EosCamera.cs" />
     <Compile Include="EosCameraCollection.cs" />
+    <Compile Include="EosCamera.HandeObjectEvents.cs" />
     <Compile Include="EosCameraSavePicturesTo.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
