@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using EDSDKLib;
 
 namespace Canon.Eos.Framework
@@ -7,7 +8,7 @@ namespace Canon.Eos.Framework
     {
         private uint HandleStateEvent(uint stateEvent, uint param, IntPtr context)
         {
-            Console.WriteLine("HandleStateEvent fired: " + stateEvent);
+            Debug.WriteLine("HandleStateEvent fired: " + stateEvent);
             return EDSDK.EDS_ERR_OK;
         }
 

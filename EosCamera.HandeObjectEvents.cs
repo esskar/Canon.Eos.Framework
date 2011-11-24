@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using EDSDKLib;
 
@@ -41,11 +42,7 @@ namespace Canon.Eos.Framework
             {
                 EDSDK.EdsDirectoryItemInfo directoryItemInfo;
                 EosAssert.NotOk(EDSDK.EdsGetDirectoryItemInfo(sender, out directoryItemInfo), "Failed to get directory item info.");
-
-                Console.WriteLine("FileName: " + directoryItemInfo.szFileName);
-                Console.WriteLine("IsFolder: " + directoryItemInfo.isFolder);
-                Console.WriteLine("Size:     " + directoryItemInfo.Size);
-
+                
                 var location = Path.Combine(_picturePath ?? Environment.CurrentDirectory, directoryItemInfo.szFileName);
 
                 EosAssert.NotOk(EDSDK.EdsCreateFileStream(location, EDSDK.EdsFileCreateDisposition.CreateAlways, EDSDK.EdsAccess.ReadWrite, out stream), "Failed to create file stream");                
@@ -86,7 +83,7 @@ namespace Canon.Eos.Framework
 
         private uint HandleObjectEvent(uint objectEvent, IntPtr sender, IntPtr context)
         {
-            Console.WriteLine("HandleObjectEvent fired: " + objectEvent);
+            Debug.WriteLine("HandleObjectEvent fired: " + objectEvent);
             switch (objectEvent)
             {
                 case EDSDK.ObjectEvent_VolumeInfoChanged:

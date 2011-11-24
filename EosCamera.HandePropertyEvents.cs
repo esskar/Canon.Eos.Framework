@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using EDSDKLib;
 
 namespace Canon.Eos.Framework
@@ -7,7 +8,7 @@ namespace Canon.Eos.Framework
     {
         private uint HandlePropertyEvent(uint propertyEvent, uint propertyId, uint param, IntPtr context)
         {
-            Console.WriteLine("HandlePropertyEvent fired: " + propertyEvent);
+            Debug.WriteLine("HandlePropertyEvent fired: " + propertyEvent);
             return EDSDK.EDS_ERR_OK;
         }
 
