@@ -36,10 +36,16 @@
   <ItemGroup>
     <Compile Include="EosAssert.cs" />
     <Compile Include="EosCamera.cs" />
-    <Compile Include="EosCamera.HandePropertyEvents.cs" />
-    <Compile Include="EosCamera.HandeStateEvents.cs" />
+    <Compile Include="EosCamera.HandePropertyEvents.cs">
+		<DependentUpon>EosCamera.cs</DependentUpon>
+	</Compile>
+    <Compile Include="EosCamera.HandeStateEvents.cs">	
+		<DependentUpon>EosCamera.cs</DependentUpon>
+	</Compile>
     <Compile Include="EosCameraCollection.cs" />
-    <Compile Include="EosCamera.HandeObjectEvents.cs" />
+    <Compile Include="EosCamera.HandeObjectEvents.cs">	
+		<DependentUpon>EosCamera.cs</DependentUpon>
+	</Compile>
     <Compile Include="EosCameraSavePicturesTo.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
