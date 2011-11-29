@@ -33,6 +33,7 @@ namespace Canon.Eos.Framework
 
         public EosCameraCollection GetCameraCollection()
         {
+            this.CheckDisposed();
             return new EosCameraCollection();
         }
 

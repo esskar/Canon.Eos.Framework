@@ -26,6 +26,7 @@ namespace Canon.Eos.Framework
         {
             get
             {
+                this.CheckDisposed();
                 if(_count < 0)                
                     EDSDK.EdsGetChildCount(_cameraList, out _count);
                 return _count;
@@ -36,6 +37,7 @@ namespace Canon.Eos.Framework
         {
             get
             {
+                this.CheckDisposed();
                 if (index < 0 || index >= this.Count)
                     throw new IndexOutOfRangeException();
 
@@ -52,7 +54,10 @@ namespace Canon.Eos.Framework
         public IEnumerator<EosCamera> GetEnumerator()
         {
             for (var i = 0; i < this.Count; ++i)
+            {
+                this.CheckDisposed();
                 yield return this[i];
+            }
         }
 
         #endregion
@@ -61,6 +66,7 @@ namespace Canon.Eos.Framework
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
+            this.CheckDisposed();
             return this.GetEnumerator();
         }
 

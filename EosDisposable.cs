@@ -9,6 +9,12 @@ namespace Canon.Eos.Framework
             this.Dispose(false);
         }
 
+        internal protected void CheckDisposed()
+        {
+            if (this.IsDisposed)
+                throw new ObjectDisposedException(this.GetType().Name);
+        }
+
         internal protected bool IsDisposed { get; private set; }
 
         internal protected virtual void DisposeManaged() { }

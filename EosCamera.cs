@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -13,16 +12,29 @@ namespace Canon.Eos.Framework
         private EDSDK.EdsDeviceInfo _deviceInfo;
         private bool _sessionOpened;
         private string _picturePath;
+        private EDSDK.EdsObjectEventHandler _edsObjectEventHandler;
+        private EDSDK.EdsPropertyEventHandler _edsPropertyEventHandler;
+        private EDSDK.EdsStateEventHandler _edsStateEventHandler;
 
         internal EosCamera(IntPtr camera)
         {
             _camera = camera;
 
-            EosAssert.NotOk(EDSDK.EdsGetDeviceInfo(_camera, out _deviceInfo), "Failed to get device info.");
-            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, this.HandlePropertyEvent, IntPtr.Zero), "Failed to set property handler.");
-            EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, this.HandleObjectEvent, IntPtr.Zero), "Failed to set object handler.");
-            EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(_camera, EDSDK.StateEvent_All, this.HandleStateEvent, IntPtr.Zero), "Failed to set state handler.");
+            EosAssert.NotOk(EDSDK.EdsGetDeviceInfo(_camera, out _deviceInfo), "Failed to get device info.");                        
+            this.SubscribeEvents();
         }
+
+        private void SubscribeEvents()
+        {            
+            _edsPropertyEventHandler = this.HandlePropertyEvent;
+            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set property handler.");            
+
+            _edsObjectEventHandler = this.HandleObjectEvent;            
+            EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");            
+
+            _edsStateEventHandler = this.HandleStateEvent;
+            EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(_camera, EDSDK.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");            
+        }        
         
         public string DeviceDescription
         {
@@ -38,6 +50,8 @@ namespace Canon.Eos.Framework
         {
             set
             {
+                this.CheckDisposed();
+
                 this.EnsureOpenSession();
 
                 EosAssert.NotOk(EDSDK.EdsSetPropertyData(_camera, EDSDK.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)value), "Failed to set SaveTo location.");
@@ -51,6 +65,8 @@ namespace Canon.Eos.Framework
 
         public void SavePicturesToHostLocation(string path)
         {
+            this.CheckDisposed();
+
             _picturePath = path;
             if (!Directory.Exists(_picturePath))
                 Directory.CreateDirectory(_picturePath);
@@ -70,6 +86,8 @@ namespace Canon.Eos.Framework
 
         private void RunSynced(Action action)
         {
+            this.CheckDisposed();
+
             EosAssert.NotOk(EDSDK.EdsSendStatusCommand(_camera, EDSDK.CameraState_UILock, 0), "Failed to lock camera.");
             try
             {
@@ -83,6 +101,7 @@ namespace Canon.Eos.Framework
 
         private void EnsureOpenSession()
         {
+            this.CheckDisposed();
             if (!_sessionOpened)
             {
                 EosAssert.NotOk(EDSDK.EdsOpenSession(_camera), "Failed to open session.");
@@ -92,6 +111,7 @@ namespace Canon.Eos.Framework
 
         protected internal override void DisposeUnmanaged()
         {
+            //this.UnsubscribeEvents();
             if (_sessionOpened)
                 EDSDK.EdsCloseSession(_camera);
 
