@@ -37,11 +37,31 @@ namespace Canon.Eos.Framework
 
             _edsPropertyEventHandler = this.HandlePropertyEvent;
             EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
-        }        
+        }
+
+        public string Artist
+        {
+            get { return this.GetPropertyStringData(EDSDK.PropID_Artist, 0); }
+        }
+        
+        public string CopyRight
+        {
+            get { return this.GetPropertyStringData(EDSDK.PropID_Copyright, 0); }
+        }
         
         public string DeviceDescription
         {
             get { return _deviceInfo.szDeviceDescription; }
+        }
+
+        public bool IsLegacy
+        {
+            get { return _deviceInfo.DeviceSubType == 0; }
+        }               
+                
+        public string OwnerName
+        {
+            get { return this.GetPropertyStringData(EDSDK.PropID_OwnerName, 0); }
         }
 
         public string PortName
@@ -49,9 +69,14 @@ namespace Canon.Eos.Framework
             get { return _deviceInfo.szPortName; }
         }
 
-        public bool IsLegacy
+        public string ProductName
         {
-            get { return _deviceInfo.DeviceSubType == 0; }
+            get { return this.GetPropertyStringData(EDSDK.PropID_ProductName, 0); }
+        }        
+
+        public string SerialNumber
+        {
+            get { return this.GetPropertyStringData(EDSDK.PropID_BodyIDEx, 0); }
         }
 
         public EosCameraSavePicturesTo SavePicturesTo
@@ -90,6 +115,14 @@ namespace Canon.Eos.Framework
         {
             this.EnsureOpenSession();            
             EosAssert.NotOk(EDSDK.EdsSendCommand(_camera, command, parameter), string.Format("Failed to send command: {0} with parameter {1}", command, parameter));            
+        }
+
+        private string GetPropertyStringData(uint propertyId, int parameter)
+        {
+            string data;
+            EosAssert.NotOk(EDSDK.EdsGetPropertyData(_camera, propertyId, parameter, out data), 
+                string.Format("Failed to get property string data: {0} with parameter {1}", propertyId, parameter));
+            return data;
         }
 
         private void RunSynced(Action action)
