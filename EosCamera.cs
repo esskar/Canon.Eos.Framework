@@ -25,10 +25,7 @@ namespace Canon.Eos.Framework
         }
 
         private void SubscribeEvents()
-        {            
-            _edsPropertyEventHandler = this.HandlePropertyEvent;
-            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set property handler.");            
-
+        {                        
             _edsObjectEventHandler = this.HandleObjectEvent;            
             EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");            
 
@@ -117,6 +114,11 @@ namespace Canon.Eos.Framework
 
             EDSDK.EdsRelease(_camera);
             base.DisposeUnmanaged();
+        }
+
+        public override string ToString()
+        {
+            return this.DeviceDescription;
         }
     }
 }
