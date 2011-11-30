@@ -9,22 +9,22 @@ namespace Canon.Eos.Framework
         private static readonly object __eventLock = new object();
         private static int __referenceCount = 0;
         private static EDSDK.EdsCameraAddedHandler __edsCameraAddedHandler;
-        private static event EventHandler GlobalCameraAddedEvent;
+        private static event EventHandler GlobalCameraAdded;
 
-        public event EventHandler CameraAddedEvent
+        public event EventHandler CameraAdded
         {
             add 
             {
                 lock (__eventLock)
                 {
-                    EosFramework.GlobalCameraAddedEvent += value;
+                    EosFramework.GlobalCameraAdded += value;
                 }
             }
             remove
             {
                 lock (__eventLock)
                 {
-                    EosFramework.GlobalCameraAddedEvent -= value;
+                    EosFramework.GlobalCameraAdded -= value;
                 }
             }
         }
@@ -58,10 +58,10 @@ namespace Canon.Eos.Framework
         {
             lock (__eventLock)
             {
-                if (EosFramework.GlobalCameraAddedEvent != null)
+                if (EosFramework.GlobalCameraAdded != null)
                 {
                     // TODO: find something better than null to pass as sender!
-                    EosFramework.GlobalCameraAddedEvent(null, EventArgs.Empty);
+                    EosFramework.GlobalCameraAdded(null, EventArgs.Empty);
                 }
             }
             return EDSDK.EDS_ERR_OK;

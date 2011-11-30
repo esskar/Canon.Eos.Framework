@@ -16,24 +16,27 @@ namespace Canon.Eos.Framework
         private EDSDK.EdsPropertyEventHandler _edsPropertyEventHandler;
         private EDSDK.EdsStateEventHandler _edsStateEventHandler;
 
+        public event EventHandler Shutdown;
+
         internal EosCamera(IntPtr camera)
         {
             _camera = camera;
 
             EosAssert.NotOk(EDSDK.EdsGetDeviceInfo(_camera, out _deviceInfo), "Failed to get device info.");                        
             this.SubscribeEvents();
+            this.EnsureOpenSession();
         }
 
         private void SubscribeEvents()
-        {                        
+        {   
+            _edsStateEventHandler = this.HandleStateEvent;
+            EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(_camera, EDSDK.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");                     
+
             _edsObjectEventHandler = this.HandleObjectEvent;            
             EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
 
             _edsPropertyEventHandler = this.HandlePropertyEvent;
-            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");
-
-            _edsStateEventHandler = this.HandleStateEvent;
-            EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(_camera, EDSDK.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");            
+            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
         }        
         
         public string DeviceDescription
@@ -44,6 +47,11 @@ namespace Canon.Eos.Framework
         public string PortName
         {
             get { return _deviceInfo.szPortName; }
+        }
+
+        public bool IsLegacy
+        {
+            get { return _deviceInfo.DeviceSubType == 0; }
         }
 
         public EosCameraSavePicturesTo SavePicturesTo
