@@ -27,7 +27,10 @@ namespace Canon.Eos.Framework
         private void SubscribeEvents()
         {                        
             _edsObjectEventHandler = this.HandleObjectEvent;            
-            EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");            
+            EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(_camera, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
+
+            _edsPropertyEventHandler = this.HandlePropertyEvent;
+            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(_camera, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");
 
             _edsStateEventHandler = this.HandleStateEvent;
             EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(_camera, EDSDK.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");            
@@ -107,8 +110,7 @@ namespace Canon.Eos.Framework
         }
 
         protected internal override void DisposeUnmanaged()
-        {
-            //this.UnsubscribeEvents();
+        {            
             if (_sessionOpened)
                 EDSDK.EdsCloseSession(_camera);
 
