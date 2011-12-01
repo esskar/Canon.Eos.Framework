@@ -50,6 +50,7 @@
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
     <Compile Include="EosDisposable.cs" />
+    <Compile Include="EosObject.cs" />
     <Compile Include="Internal\EDSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
