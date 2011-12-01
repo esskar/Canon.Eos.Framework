@@ -52,6 +52,7 @@
     <Compile Include="EosDisposable.cs" />
     <Compile Include="EosObject.cs" />
     <Compile Include="Internal\EDSDK.cs" />
+    <Compile Include="Internal\EDSDKAddons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

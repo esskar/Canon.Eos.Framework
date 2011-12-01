@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace EDSDKLib
 {
 
-    public class EDSDK
+    public partial class EDSDK
     {
 
 
@@ -1072,11 +1072,7 @@ namespace EDSDKLib
         -----------------------------------------------------------------------------*/
         [DllImport("EDSDK.dll")]
         public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyID,
-             int inParam, int inPropertySize, [MarshalAs(UnmanagedType.AsAny), In] object inPropertyData);
-
-        [DllImport("EDSDK.dll")]
-        public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyID,
-             int inParam, int inPropertySize, byte[] inPropertyData);
+             int inParam, int inPropertySize, [MarshalAs(UnmanagedType.AsAny), In] object inPropertyData);        
     
         /*-----------------------------------------------------------------------------
         //  
