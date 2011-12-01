@@ -24,12 +24,7 @@ namespace Canon.Eos.Framework
             this.SetEventHandlers();
             this.EnsureOpenSession();
         }        
-        
-        public string DeviceDescription
-        {
-            get { return _deviceInfo.szDeviceDescription; }
-        }
-
+                
         public new string Artist
         {
             get { return base.Artist; }
@@ -42,16 +37,21 @@ namespace Canon.Eos.Framework
             set { this.SetPropertyStringData(EDSDK.PropID_Copyright, value, 64); }
         }
 
-        public new string OwnerName
+        public string DeviceDescription
         {
-            get { return base.OwnerName; }
-            set { this.SetPropertyStringData(EDSDK.PropID_OwnerName, value, 32); }
+            get { return _deviceInfo.szDeviceDescription; }
         }
 
         public bool IsLegacy
         {
             get { return _deviceInfo.DeviceSubType == 0; }
         }               
+
+        public new string OwnerName
+        {
+            get { return base.OwnerName; }
+            set { this.SetPropertyStringData(EDSDK.PropID_OwnerName, value, 32); }
+        }        
                         
         public string PortName
         {
