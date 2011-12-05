@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EosAssert.cs" />
@@ -46,6 +47,7 @@
     <Compile Include="EosCamera.HandeObjectEvents.cs">
       <DependentUpon>EosCamera.cs</DependentUpon>
     </Compile>
+    <Compile Include="EosCameraEvfOutputDevice.cs" />
     <Compile Include="EosCameraSavePicturesTo.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="EosObject.cs" />
     <Compile Include="Internal\EDSDK.cs" />
     <Compile Include="Internal\EDSDKAddons.cs" />
+    <Compile Include="LiveViewEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

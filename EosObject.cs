@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using EDSDKLib;
 
@@ -54,12 +55,26 @@ namespace Canon.Eos.Framework
             base.DisposeUnmanaged();
         }
 
+        protected long GetPropertyIntegerData(uint propertyId)
+        {
+            uint data;
+            EosAssert.NotOk(EDSDK.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
+                string.Format("Failed to get property integer data: propertyId {0}", propertyId));
+            return data;
+        }
+
         protected string GetPropertyStringData(uint propertyId)
         {
             string data;
             EosAssert.NotOk(EDSDK.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
                 string.Format("Failed to get property string data: propertyId {0}", propertyId));
             return data;
+        }        
+
+        protected void SetPropertyIntegerData(uint propertyId, long data)
+        {
+            EosAssert.NotOk(EDSDK.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)), (uint)data), 
+                string.Format("Failed to set property integer data: propertyId {0}, data {1}", propertyId, data));
         }
 
         protected void SetPropertyStringData(uint propertyId, string data, int maxByteLength)

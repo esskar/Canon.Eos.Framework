@@ -13,9 +13,12 @@ namespace Canon.Eos.Framework
         private string _picturePath;
         private EDSDK.EdsObjectEventHandler _edsObjectEventHandler;
         private EDSDK.EdsPropertyEventHandler _edsPropertyEventHandler;
-        private EDSDK.EdsStateEventHandler _edsStateEventHandler;
+        private EDSDK.EdsStateEventHandler _edsStateEventHandler;        
 
         public event EventHandler Shutdown;
+        public event EventHandler LiveViewStarted;
+        public event EventHandler LiveViewStopped;
+        public event EventHandler<LiveViewEventArgs> LiveViewUpdate;
 
         internal EosCamera(IntPtr camera)
             : base(camera)
@@ -40,6 +43,18 @@ namespace Canon.Eos.Framework
         public string DeviceDescription
         {
             get { return _deviceInfo.szDeviceDescription; }
+        }
+
+        public bool IsEvfMode
+        {
+            get { return this.GetPropertyIntegerData(EDSDK.PropID_Evf_Mode) != 0; }
+            set { this.SetPropertyIntegerData(EDSDK.PropID_Evf_Mode, value ? 1 : 0); }
+        }
+
+        public EosCameraEvfOutputDevice EvfOutputDevice
+        {
+            get { return (EosCameraEvfOutputDevice)this.GetPropertyIntegerData(EDSDK.PropID_Evf_OutputDevice); }
+            set { this.SetPropertyIntegerData(EDSDK.PropID_Evf_OutputDevice, (long)value); }
         }
 
         public bool IsLegacy
@@ -133,7 +148,24 @@ namespace Canon.Eos.Framework
 
             _edsPropertyEventHandler = this.HandlePropertyEvent;
             EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(this.Handle, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
-        }               
+        }
+
+        public void StartLiveView()
+        {
+            if (!this.IsEvfMode)
+                this.IsEvfMode = true;
+
+            var device = this.EvfOutputDevice;
+            device |= EosCameraEvfOutputDevice.Host;
+            this.EvfOutputDevice = device;
+        }
+
+        public void StopLiveView()
+        {
+            var device = this.EvfOutputDevice;
+            device &= ~EosCameraEvfOutputDevice.Host;
+            this.EvfOutputDevice = device;
+        }
 
         public void TakePicture()
         {
