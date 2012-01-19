@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using EDSDKLib;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
@@ -40,14 +40,14 @@ namespace Canon.Eos.Framework
             var stream = IntPtr.Zero;
             try
             {
-                EDSDK.EdsDirectoryItemInfo directoryItemInfo;
-                EosAssert.NotOk(EDSDK.EdsGetDirectoryItemInfo(sender, out directoryItemInfo), "Failed to get directory item info.");
+                Edsdk.EdsDirectoryItemInfo directoryItemInfo;
+                EosAssert.NotOk(Edsdk.EdsGetDirectoryItemInfo(sender, out directoryItemInfo), "Failed to get directory item info.");
                 
                 var location = Path.Combine(_picturePath ?? Environment.CurrentDirectory, directoryItemInfo.szFileName);
 
-                EosAssert.NotOk(EDSDK.EdsCreateFileStream(location, EDSDK.EdsFileCreateDisposition.CreateAlways, EDSDK.EdsAccess.ReadWrite, out stream), "Failed to create file stream");                
-                EosAssert.NotOk(EDSDK.EdsDownload(sender, directoryItemInfo.Size, stream), "Failed to create file stream");
-                EosAssert.NotOk(EDSDK.EdsDownloadComplete(sender), "Failed to complete download");
+                EosAssert.NotOk(Edsdk.EdsCreateFileStream(location, Edsdk.EdsFileCreateDisposition.CreateAlways, Edsdk.EdsAccess.ReadWrite, out stream), "Failed to create file stream");                
+                EosAssert.NotOk(Edsdk.EdsDownload(sender, directoryItemInfo.Size, stream), "Failed to create file stream");
+                EosAssert.NotOk(Edsdk.EdsDownloadComplete(sender), "Failed to complete download");
             }
             catch (EosException)
             {
@@ -59,9 +59,9 @@ namespace Canon.Eos.Framework
             }
             finally
             {
-                EDSDK.EdsRelease(sender);
+                Edsdk.EdsRelease(sender);
                 if (stream != IntPtr.Zero)
-                    EDSDK.EdsRelease(stream);
+                    Edsdk.EdsRelease(stream);
             }
         }
         
@@ -86,45 +86,45 @@ namespace Canon.Eos.Framework
             Debug.WriteLine("HandleObjectEvent fired: " + objectEvent);
             switch (objectEvent)
             {
-                case EDSDK.ObjectEvent_VolumeInfoChanged:
+                case Edsdk.ObjectEvent_VolumeInfoChanged:
                     this.OnObjectEventVolumeInfoChanged(sender, context);
                     break;
-                case EDSDK.ObjectEvent_VolumeUpdateItems:
+                case Edsdk.ObjectEvent_VolumeUpdateItems:
                     this.OnObjectEventVolumeUpdateItems(sender, context);
                     break;
-                case EDSDK.ObjectEvent_FolderUpdateItems:
+                case Edsdk.ObjectEvent_FolderUpdateItems:
                     this.OnObjectEventFolderUpdateItems(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemCreated:
+                case Edsdk.ObjectEvent_DirItemCreated:
                     this.OnObjectEventDirItemCreated(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemRemoved:
+                case Edsdk.ObjectEvent_DirItemRemoved:
                     this.OnObjectEventDirItemRemoved(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemInfoChanged:
+                case Edsdk.ObjectEvent_DirItemInfoChanged:
                     this.OnObjectEventDirItemInfoChanged(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemContentChanged:
+                case Edsdk.ObjectEvent_DirItemContentChanged:
                     this.OnObjectEventDirItemContentChanged(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemRequestTransfer:
+                case Edsdk.ObjectEvent_DirItemRequestTransfer:
                     this.OnObjectEventDirItemRequestTransfer(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemRequestTransferDT:
+                case Edsdk.ObjectEvent_DirItemRequestTransferDT:
                     this.OnObjectEventDirItemRequestTransferDt(sender, context);
                     break;
-                case EDSDK.ObjectEvent_DirItemCancelTransferDT:
+                case Edsdk.ObjectEvent_DirItemCancelTransferDT:
                     this.OnObjectEventDirItemCancelTransferDt(sender, context);
                     break;
-                case EDSDK.ObjectEvent_VolumeAdded:
+                case Edsdk.ObjectEvent_VolumeAdded:
                     this.OnObjectEventVolumeAdded(sender, context);
                     break;
-                case EDSDK.ObjectEvent_VolumeRemoved:
+                case Edsdk.ObjectEvent_VolumeRemoved:
                     this.OnObjectEventVolumeRemoved(sender, context);
                     break;
             }
 
-            return EDSDK.EDS_ERR_OK;
+            return Edsdk.EDS_ERR_OK;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using EDSDKLib;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
@@ -24,7 +24,7 @@ namespace Canon.Eos.Framework
                 this.LiveViewStopped(this, eventArgs);
         }
 
-        private void OnLiveViewUpdate(LiveViewEventArgs eventArgs)
+        private void OnLiveViewUpdate(EosLiveViewEventArgs eventArgs)
         {
             if (this.LiveViewUpdate != null)
                 this.LiveViewUpdate(this, eventArgs);
@@ -42,38 +42,35 @@ namespace Canon.Eos.Framework
             var evfImage = IntPtr.Zero;
             try
             {
-                EosAssert.NotOk(EDSDK.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
-                EosAssert.NotOk(EDSDK.EdsCreateEvfImageRefCdecl(memoryStream, out evfImage), "Failed to create evf image.");
-                EosAssert.NotOk(EDSDK.EdsDownloadEvfImageCdecl(this.Handle, evfImage), "Failed to download evf image.");
+                EosAssert.NotOk(Edsdk.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
+                EosAssert.NotOk(Edsdk.EdsCreateEvfImageRefCdecl(memoryStream, out evfImage), "Failed to create evf image.");
+                EosAssert.NotOk(Edsdk.EdsDownloadEvfImageCdecl(this.Handle, evfImage), "Failed to download evf image.");
 
                 IntPtr evfImagePtr;
-                EosAssert.NotOk(EDSDK.EdsGetPointer(memoryStream, out evfImagePtr), "Failed to get evf image pointer.");
+                EosAssert.NotOk(Edsdk.EdsGetPointer(memoryStream, out evfImagePtr), "Failed to get evf image pointer.");
                 if (evfImagePtr != IntPtr.Zero)
                 {
                     uint evfImageLen;
-                    EosAssert.NotOk(EDSDK.EdsGetLength(memoryStream, out evfImageLen), "Failed to get evf image pointer length.");
+                    EosAssert.NotOk(Edsdk.EdsGetLength(memoryStream, out evfImageLen), "Failed to get evf image pointer length.");
 
                     var buffer = new byte[evfImageLen];
                     Marshal.Copy(evfImagePtr, buffer, 0, buffer.Length);
 
                     using (var imageStream = new MemoryStream(buffer))
-                    {
-                        var image = Image.FromStream(imageStream);
-                        this.OnLiveViewUpdate(new LiveViewEventArgs(image));
-                    }
+                        this.OnLiveViewUpdate(new EosLiveViewEventArgs(Image.FromStream(imageStream)));                    
                 }
             }
             catch (EosException eosEx)
             {
-                if (eosEx.EosErrorCode != EDSDK.EDS_ERR_DEVICE_BUSY && eosEx.EosErrorCode != EDSDK.EDS_ERR_OBJECT_NOTREADY)
+                if (eosEx.EosErrorCode != EosErrorCode.DeviceBusy && eosEx.EosErrorCode != EosErrorCode.ObjectNotReady)
                     throw;
             }
             finally
             {
                 if (evfImage != IntPtr.Zero)
-                    EDSDK.EdsRelease(evfImage);
+                    Edsdk.EdsRelease(evfImage);
                 if (memoryStream != IntPtr.Zero)
-                    EDSDK.EdsRelease(memoryStream);
+                    Edsdk.EdsRelease(memoryStream);
             }
 
             return true;
@@ -118,7 +115,7 @@ namespace Canon.Eos.Framework
             Debug.WriteLine("OnPropertyEventPropertyChanged: " + propertyId);
             switch (propertyId)
             {
-                case EDSDK.PropID_Evf_OutputDevice:
+                case Edsdk.PropID_Evf_OutputDevice:
                     this.OnPropertyEventPropertyEvfOutputDeviceChanged(param, context);
                     break;
             }
@@ -134,15 +131,15 @@ namespace Canon.Eos.Framework
             Debug.WriteLine("HandlePropertyEvent fired: " + propertyEvent + ", id: " + propertyId);
             switch (propertyEvent)
             {
-                case EDSDK.PropertyEvent_PropertyChanged:
+                case Edsdk.PropertyEvent_PropertyChanged:
                     this.OnPropertyEventPropertyChanged(propertyId, param, context);
                     break;
 
-                case EDSDK.PropertyEvent_PropertyDescChanged:
+                case Edsdk.PropertyEvent_PropertyDescChanged:
                     this.OnPropertyEventPropertyDescChanged(propertyId, param, context);
                     break;
             }
-            return EDSDK.EDS_ERR_OK;
+            return Edsdk.EDS_ERR_OK;
         }
 
         

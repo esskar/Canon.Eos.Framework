@@ -1,18 +1,16 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace EDSDKLib
+namespace Canon.Eos.Framework.Internal
 {
 
-    public partial class EDSDK
+    internal partial class Edsdk
     {
-
-
         #region Callback Functions
 
         public delegate uint EdsProgressCallback( uint inPercent, IntPtr inContext, ref bool outCancel);
         public delegate uint EdsCameraAddedHandler(IntPtr inContext);
-        public delegate uint EdsPropertyEventHandler(uint inEvent, uint inPropertyID, uint inParam, IntPtr inContext); 
+        public delegate uint EdsPropertyEventHandler(uint inEvent, uint inPropertyId, uint inParam, IntPtr inContext); 
         public delegate uint EdsObjectEventHandler( uint inEvent, IntPtr inRef, IntPtr inContext); 
         public delegate uint EdsStateEventHandler( uint inEvent, uint inParameter, IntPtr inContext);
 
@@ -977,7 +975,7 @@ namespace EDSDKLib
         //
         //  Parameters:
         //       In:    inRef - The reference of the item.
-        //              inPropertyID - The ProprtyID
+        //              inPropertyId - The ProprtyID
         //              inParam - Additional information of property.
         //                   We use this parameter in order to specify an index
         //                   in case there are two or more values over the same ID.
@@ -989,7 +987,7 @@ namespace EDSDKLib
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/ 
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsGetPropertySize(IntPtr inRef, uint inPropertyID, int inParam,
+        public extern static uint EdsGetPropertySize(IntPtr inRef, uint inPropertyId, int inParam,
              out EdsDataType outDataType, out int outSize);
         
         /*-----------------------------------------------------------------------------
@@ -1001,7 +999,7 @@ namespace EDSDKLib
         //
         //  Parameters:
         //       In:    inRef - The reference of the item.
-        //              inPropertyID - The ProprtyID
+        //              inPropertyId - The ProprtyID
         //              inParam - Additional information of property.
         //                   We use this parameter in order to specify an index
         //                   in case there are two or more values over the same ID.
@@ -1012,38 +1010,38 @@ namespace EDSDKLib
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/      
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyID, int inParam,
+        public extern static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyId, int inParam,
              int inPropertySize, IntPtr outPropertyData);
 
         #region GetPorpertyData Wrapper
 
-        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyID, int inParam, out uint outPropertyData)
+        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyId, int inParam, out uint outPropertyData)
         {
             int size = Marshal.SizeOf(typeof(uint));
             IntPtr ptr = Marshal.AllocHGlobal(size);
-            uint err = EdsGetPropertyData(inRef, inPropertyID, inParam, size, ptr);
+            uint err = EdsGetPropertyData(inRef, inPropertyId, inParam, size, ptr);
 
             outPropertyData = (uint)Marshal.PtrToStructure(ptr, typeof(uint));
             Marshal.FreeHGlobal(ptr);
             return err;
         }
 
-        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyID, int inParam,
-             out EDSDK.EdsTime outPropertyData)
+        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyId, int inParam,
+             out Edsdk.EdsTime outPropertyData)
         {
-            int size = Marshal.SizeOf(typeof(EDSDK.EdsTime));
+            int size = Marshal.SizeOf(typeof(Edsdk.EdsTime));
             IntPtr ptr = Marshal.AllocHGlobal(size);
-            uint err = EdsGetPropertyData(inRef, inPropertyID, inParam, size, ptr);
+            uint err = EdsGetPropertyData(inRef, inPropertyId, inParam, size, ptr);
 
-            outPropertyData = (EDSDK.EdsTime)Marshal.PtrToStructure(ptr, typeof(EDSDK.EdsTime));
+            outPropertyData = (Edsdk.EdsTime)Marshal.PtrToStructure(ptr, typeof(Edsdk.EdsTime));
             Marshal.FreeHGlobal(ptr);
             return err;
         }
 
-        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyID, int inParam, out string outPropertyData)
+        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyId, int inParam, out string outPropertyData)
         {
             IntPtr ptr = Marshal.AllocHGlobal(256);
-            uint err = EdsGetPropertyData(inRef, inPropertyID, inParam, 256, ptr);
+            uint err = EdsGetPropertyData(inRef, inPropertyId, inParam, 256, ptr);
 
             outPropertyData = Marshal.PtrToStringAnsi(ptr);
             Marshal.FreeHGlobal(ptr);
@@ -1061,7 +1059,7 @@ namespace EDSDKLib
         //
         //  Parameters:
         //       In:    inRef - The reference of the item.
-        //              inPropertyID - The ProprtyID
+        //              inPropertyId - The ProprtyID
         //              inParam - Additional information of property.
         //              inPropertySize - The number of bytes of the prepared buffer
         //                  for set property-value.
@@ -1071,7 +1069,7 @@ namespace EDSDKLib
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyID,
+        public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyId,
              int inParam, int inPropertySize, [MarshalAs(UnmanagedType.AsAny), In] object inPropertyData);        
     
         /*-----------------------------------------------------------------------------
@@ -1085,13 +1083,13 @@ namespace EDSDKLib
         //
         //  Parameters:
         //       In:    inRef - The reference of the camera.
-        //              inPropertyID - The Property ID.
+        //              inPropertyId - The Property ID.
         //       Out:   outPropertyDesc - Array of the value which can be set up.
         //
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/ 
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsGetPropertyDesc( IntPtr inRef, uint inPropertyID,
+        public extern static uint EdsGetPropertyDesc( IntPtr inRef, uint inPropertyId,
              out EdsPropertyDesc outPropertyDesc);
 
         /*--------------------------------------------

@@ -1,29 +1,28 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-
-using EDSDKLib;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
     public sealed partial class EosCamera : EosObject
     {
-        private EDSDK.EdsDeviceInfo _deviceInfo;
+        private Edsdk.EdsDeviceInfo _deviceInfo;
         private bool _sessionOpened;
         private string _picturePath;
-        private EDSDK.EdsObjectEventHandler _edsObjectEventHandler;
-        private EDSDK.EdsPropertyEventHandler _edsPropertyEventHandler;
-        private EDSDK.EdsStateEventHandler _edsStateEventHandler;        
+        private Edsdk.EdsObjectEventHandler _edsObjectEventHandler;
+        private Edsdk.EdsPropertyEventHandler _edsPropertyEventHandler;
+        private Edsdk.EdsStateEventHandler _edsStateEventHandler;        
 
         public event EventHandler Shutdown;
         public event EventHandler LiveViewStarted;
         public event EventHandler LiveViewStopped;
-        public event EventHandler<LiveViewEventArgs> LiveViewUpdate;
+        public event EventHandler<EosLiveViewEventArgs> LiveViewUpdate;
 
         internal EosCamera(IntPtr camera)
             : base(camera)
         {
-            EosAssert.NotOk(EDSDK.EdsGetDeviceInfo(this.Handle, out _deviceInfo), "Failed to get device info.");                        
+            EosAssert.NotOk(Edsdk.EdsGetDeviceInfo(this.Handle, out _deviceInfo), "Failed to get device info.");                        
             this.SetEventHandlers();
             this.EnsureOpenSession();
         }        
@@ -31,13 +30,13 @@ namespace Canon.Eos.Framework
         public new string Artist
         {
             get { return base.Artist; }
-            set { this.SetPropertyStringData(EDSDK.PropID_Artist, value, 64); }
+            set { this.SetPropertyStringData(Edsdk.PropID_Artist, value, 64); }
         }
 
         public new string Copyright
         {
             get { return base.Copyright; }
-            set { this.SetPropertyStringData(EDSDK.PropID_Copyright, value, 64); }
+            set { this.SetPropertyStringData(Edsdk.PropID_Copyright, value, 64); }
         }
 
         public string DeviceDescription
@@ -47,14 +46,14 @@ namespace Canon.Eos.Framework
 
         public bool IsEvfMode
         {
-            get { return this.GetPropertyIntegerData(EDSDK.PropID_Evf_Mode) != 0; }
-            set { this.SetPropertyIntegerData(EDSDK.PropID_Evf_Mode, value ? 1 : 0); }
+            get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_Mode) != 0; }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_Mode, value ? 1 : 0); }
         }
 
         public EosCameraEvfOutputDevice EvfOutputDevice
         {
-            get { return (EosCameraEvfOutputDevice)this.GetPropertyIntegerData(EDSDK.PropID_Evf_OutputDevice); }
-            set { this.SetPropertyIntegerData(EDSDK.PropID_Evf_OutputDevice, (long)value); }
+            get { return (EosCameraEvfOutputDevice)this.GetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice, (long)value); }
         }
 
         public bool IsLegacy
@@ -65,7 +64,7 @@ namespace Canon.Eos.Framework
         public new string OwnerName
         {
             get { return base.OwnerName; }
-            set { this.SetPropertyStringData(EDSDK.PropID_OwnerName, value, 32); }
+            set { this.SetPropertyStringData(Edsdk.PropID_OwnerName, value, 32); }
         }        
                         
         public string PortName
@@ -81,11 +80,11 @@ namespace Canon.Eos.Framework
 
                 this.EnsureOpenSession();
 
-                EosAssert.NotOk(EDSDK.EdsSetPropertyData(this.Handle, EDSDK.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)value), "Failed to set SaveTo location.");
+                EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)value), "Failed to set SaveTo location.");
                 this.RunSynced(() =>
                 {
-                    var capacity = new EDSDK.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
-                    EosAssert.NotOk(EDSDK.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
+                    var capacity = new Edsdk.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
+                    EosAssert.NotOk(Edsdk.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
                 });
             }
         }
@@ -93,7 +92,7 @@ namespace Canon.Eos.Framework
         protected internal override void DisposeUnmanaged()
         {            
             if (_sessionOpened)
-                EDSDK.EdsCloseSession(this.Handle);
+                Edsdk.EdsCloseSession(this.Handle);
             base.DisposeUnmanaged();
         }
 
@@ -102,7 +101,7 @@ namespace Canon.Eos.Framework
             this.CheckDisposed();
             if (!_sessionOpened)
             {
-                EosAssert.NotOk(EDSDK.EdsOpenSession(this.Handle), "Failed to open session.");
+                EosAssert.NotOk(Edsdk.EdsOpenSession(this.Handle), "Failed to open session.");
                 _sessionOpened = true;
             }
         }
@@ -111,14 +110,14 @@ namespace Canon.Eos.Framework
         {
             this.CheckDisposed();
 
-            EosAssert.NotOk(EDSDK.EdsSendStatusCommand(this.Handle, EDSDK.CameraState_UILock, 0), "Failed to lock camera.");
+            EosAssert.NotOk(Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UILock, 0), "Failed to lock camera.");
             try
             {
                 action();
             }
             finally
             {
-                EDSDK.EdsSendStatusCommand(this.Handle, EDSDK.CameraState_UIUnLock, 0);
+                Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UIUnLock, 0);
             }
         }                        
 
@@ -135,19 +134,19 @@ namespace Canon.Eos.Framework
         private void SendCommand(uint command, int parameter)
         {
             this.EnsureOpenSession();            
-            EosAssert.NotOk(EDSDK.EdsSendCommand(this.Handle, command, parameter), string.Format("Failed to send command: {0} with parameter {1}", command, parameter));            
+            EosAssert.NotOk(Edsdk.EdsSendCommand(this.Handle, command, parameter), string.Format("Failed to send command: {0} with parameter {1}", command, parameter));            
         }
 
         private void SetEventHandlers()
         {   
             _edsStateEventHandler = this.HandleStateEvent;
-            EosAssert.NotOk(EDSDK.EdsSetCameraStateEventHandler(this.Handle, EDSDK.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");                     
+            EosAssert.NotOk(Edsdk.EdsSetCameraStateEventHandler(this.Handle, Edsdk.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");                     
 
             _edsObjectEventHandler = this.HandleObjectEvent;            
-            EosAssert.NotOk(EDSDK.EdsSetObjectEventHandler(this.Handle, EDSDK.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
+            EosAssert.NotOk(Edsdk.EdsSetObjectEventHandler(this.Handle, Edsdk.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
 
             _edsPropertyEventHandler = this.HandlePropertyEvent;
-            EosAssert.NotOk(EDSDK.EdsSetPropertyEventHandler(this.Handle, EDSDK.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
+            EosAssert.NotOk(Edsdk.EdsSetPropertyEventHandler(this.Handle, Edsdk.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
         }
 
         public void StartLiveView()
@@ -169,7 +168,7 @@ namespace Canon.Eos.Framework
 
         public void TakePicture()
         {
-            this.SendCommand(EDSDK.CameraCommand_TakePicture, 0);            
+            this.SendCommand(Edsdk.CameraCommand_TakePicture, 0);            
         }
 
         public override string ToString()

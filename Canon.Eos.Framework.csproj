@@ -49,13 +49,15 @@
     </Compile>
     <Compile Include="EosCameraEvfOutputDevice.cs" />
     <Compile Include="EosCameraSavePicturesTo.cs" />
+    <Compile Include="EosErrorCode.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
     <Compile Include="EosDisposable.cs" />
     <Compile Include="EosObject.cs" />
     <Compile Include="Internal\EDSDK.cs" />
     <Compile Include="Internal\EDSDKAddons.cs" />
-    <Compile Include="LiveViewEventArgs.cs" />
+    <Compile Include="EosLiveViewEventArgs.cs" />
+    <Compile Include="Internal\Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace EDSDKLib
+namespace Canon.Eos.Framework.Internal
 {
-    public partial class EDSDK
+    internal partial class Edsdk
     {
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyID,
+        public extern static uint EdsSetPropertyData( IntPtr inRef, uint inPropertyId,
              int inParam, int inPropertySize, byte[] inPropertyData);
 
         [DllImport("EDSDK.dll", EntryPoint="EdsCreateEvfImageRef", CallingConvention=CallingConvention.Cdecl)]        

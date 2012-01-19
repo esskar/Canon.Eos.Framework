@@ -1,5 +1,5 @@
 ﻿using System;
-using EDSDKLib;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
@@ -8,7 +8,7 @@ namespace Canon.Eos.Framework
         private static readonly object __referenceLock = new object();
         private static readonly object __eventLock = new object();
         private static int __referenceCount = 0;
-        private static EDSDK.EdsCameraAddedHandler __edsCameraAddedHandler;
+        private static Edsdk.EdsCameraAddedHandler __edsCameraAddedHandler;
         private static event EventHandler GlobalCameraAdded;
 
         public event EventHandler CameraAdded
@@ -37,9 +37,9 @@ namespace Canon.Eos.Framework
                 {
                     try
                     {
-                        EosAssert.NotOk(EDSDK.EdsInitializeSDK(), "Failed to initialize the SDK.");
+                        EosAssert.NotOk(Edsdk.EdsInitializeSDK(), "Failed to initialize the SDK.");
                         __edsCameraAddedHandler = EosFramework.HandleCameraAddedEvent;
-                        EDSDK.EdsSetCameraAddedHandler(__edsCameraAddedHandler, IntPtr.Zero);
+                        Edsdk.EdsSetCameraAddedHandler(__edsCameraAddedHandler, IntPtr.Zero);
                     }
                     catch (EosException)
                     {
@@ -64,7 +64,7 @@ namespace Canon.Eos.Framework
                     EosFramework.GlobalCameraAdded(null, EventArgs.Empty);
                 }
             }
-            return EDSDK.EDS_ERR_OK;
+            return Edsdk.EDS_ERR_OK;
         }
 
         public EosCameraCollection GetCameraCollection()
@@ -80,7 +80,7 @@ namespace Canon.Eos.Framework
                 if (__referenceCount > 0)
                 {
                     if(--__referenceCount == 0)
-                        EDSDKLib.EDSDK.EdsTerminateSDK();
+                        Edsdk.EdsTerminateSDK();
                 }
             }
             base.DisposeUnmanaged();

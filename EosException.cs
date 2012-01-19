@@ -1,21 +1,37 @@
 ﻿using System;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
     public class EosException : Exception
     {
+        public EosException(long eosErrorCode)
+        {
+            this.EosErrorCode = (EosErrorCode)eosErrorCode;
+        }
+
         public EosException(long eosErrorCode, string message)
             : base(message) 
         {
-            this.EosErrorCode = eosErrorCode;
+            this.EosErrorCode = (EosErrorCode)eosErrorCode;
         }
 
         public EosException(long eosErrorCode, string message, Exception innerException)
             : base(message, innerException) 
         {
-            this.EosErrorCode = eosErrorCode;
+            this.EosErrorCode = (EosErrorCode)eosErrorCode;
         }
 
-        public long EosErrorCode { get; private set; }        
+        public EosErrorCode EosErrorCode { get; private set; }
+
+        public string EosErrorCodeMessage
+        {
+            get { return Util.ConvertCamelCasedStringToFriendlyString(this.EosErrorCode.ToString()) + "."; }
+        }
+
+        public override string Message
+        {
+            get { return string.Format("{0}{1}{2}", this.EosErrorCodeMessage, Environment.NewLine, base.Message); }
+        }
     }
 }

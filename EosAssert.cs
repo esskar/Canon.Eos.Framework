@@ -1,5 +1,5 @@
 ﻿using System;
-using EDSDKLib;
+using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
@@ -7,13 +7,13 @@ namespace Canon.Eos.Framework
     {
         public static void NotOk(uint result, string message)
         {
-            if (result != EDSDK.EDS_ERR_OK)
+            if (result != Edsdk.EDS_ERR_OK)
                 throw new EosException(result, message);
         }
 
         public static void NotOk(uint result, string message, Exception exception)
         {
-            if (result != EDSDK.EDS_ERR_OK)
+            if (result != Edsdk.EDS_ERR_OK)
                 throw new EosException(result, message, exception);
         }
     }
