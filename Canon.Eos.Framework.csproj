@@ -54,6 +54,8 @@
     <Compile Include="EosFramework.cs" />
     <Compile Include="EosDisposable.cs" />
     <Compile Include="EosObject.cs" />
+    <Compile Include="Interfaces\IEosLog.cs" />
+    <Compile Include="Internal\ConsoleLog.cs" />
     <Compile Include="Internal\EDSDK.cs" />
     <Compile Include="Internal\EDSDKAddons.cs" />
     <Compile Include="EosLiveViewEventArgs.cs" />

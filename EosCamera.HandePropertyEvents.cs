@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -112,7 +111,7 @@ namespace Canon.Eos.Framework
 
         private void OnPropertyEventPropertyChanged(uint propertyId, uint param, IntPtr context)
         {
-            Debug.WriteLine("OnPropertyEventPropertyChanged: " + propertyId);
+            EosFramework.LogInstance.Debug("OnPropertyEventPropertyChanged: " + propertyId);
             switch (propertyId)
             {
                 case Edsdk.PropID_Evf_OutputDevice:
@@ -123,12 +122,12 @@ namespace Canon.Eos.Framework
 
         private void OnPropertyEventPropertyDescChanged(uint propertyId, uint param, IntPtr context)
         {
-            Debug.WriteLine("OnPropertyEventPropertyDescChanged: " + propertyId);            
+            EosFramework.LogInstance.Debug("OnPropertyEventPropertyDescChanged: " + propertyId);            
         }
 
         private uint HandlePropertyEvent(uint propertyEvent, uint propertyId, uint param, IntPtr context)
         {
-            Debug.WriteLine("HandlePropertyEvent fired: " + propertyEvent + ", id: " + propertyId);
+            EosFramework.LogInstance.Debug("HandlePropertyEvent fired: " + propertyEvent + ", id: " + propertyId);
             switch (propertyEvent)
             {
                 case Edsdk.PropertyEvent_PropertyChanged:

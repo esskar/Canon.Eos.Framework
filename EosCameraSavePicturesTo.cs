@@ -3,7 +3,7 @@
 namespace Canon.Eos.Framework
 {
     [Flags]
-    public enum EosCameraSavePicturesTo : int
+    internal enum EosCameraSavePicturesTo : int
     {
         Camera = 1, Host = 2
     }

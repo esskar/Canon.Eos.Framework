@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
@@ -14,7 +13,7 @@ namespace Canon.Eos.Framework
 
         private uint HandleStateEvent(uint stateEvent, uint param, IntPtr context)
         {
-            Debug.WriteLine("HandleStateEvent fired: " + stateEvent);
+            EosFramework.LogInstance.Debug("HandleStateEvent fired: " + stateEvent);
             switch (stateEvent)
             {
                 case Edsdk.StateEvent_Shutdown:

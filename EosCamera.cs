@@ -82,25 +82,23 @@ namespace Canon.Eos.Framework
         public string PortName
         {
             get { return _deviceInfo.szPortName; }
-        }        
-        
-        public EosCameraSavePicturesTo SavePicturesTo
+        }       
+ 
+        private void ChangePicturesSaveLocation(EosCameraSavePicturesTo savePictureTo)
         {
-            set
+            this.CheckDisposed();
+
+            this.EnsureOpenSession();
+
+            EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)savePictureTo), "Failed to set SaveTo location.");
+            this.RunSynced(() =>
             {
-                this.CheckDisposed();
-
-                this.EnsureOpenSession();
-
-                EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)value), "Failed to set SaveTo location.");
-                this.RunSynced(() =>
-                {
-                    var capacity = new Edsdk.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
-                    EosAssert.NotOk(Edsdk.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
-                });
-            }
+                var capacity = new Edsdk.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
+                EosAssert.NotOk(Edsdk.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
+            });            
         }
 
+                
         protected internal override void DisposeUnmanaged()
         {            
             if (_sessionOpened)
@@ -131,16 +129,24 @@ namespace Canon.Eos.Framework
             {
                 Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UIUnLock);
             }
-        }                        
+        }
 
-        public void SavePicturesToHostLocation(string path)
+        public void SavePictiresToCamera()
+        {
+            this.CheckDisposed();
+            _picturePath = null;
+            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Camera);
+        }
+
+        public void SavePicturesToHost(string pathFolder)
         {
             this.CheckDisposed();
 
-            _picturePath = path;
+            _picturePath = pathFolder;
             if (!Directory.Exists(_picturePath))
                 Directory.CreateDirectory(_picturePath);
-            this.SavePicturesTo = EosCameraSavePicturesTo.Host;                        
+
+            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Host);                         
         }        
 
         private void SendCommand(uint command, int parameter = 0)

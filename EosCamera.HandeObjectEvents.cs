@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using Canon.Eos.Framework.Internal;
 
@@ -83,7 +82,7 @@ namespace Canon.Eos.Framework
 
         private uint HandleObjectEvent(uint objectEvent, IntPtr sender, IntPtr context)
         {
-            Debug.WriteLine("HandleObjectEvent fired: " + objectEvent);
+            EosFramework.LogInstance.Debug("HandleObjectEvent fired: " + objectEvent);
             switch (objectEvent)
             {
                 case Edsdk.ObjectEvent_VolumeInfoChanged:

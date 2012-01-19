@@ -1,4 +1,5 @@
 ﻿using System;
+using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
@@ -10,6 +11,13 @@ namespace Canon.Eos.Framework
         private static int __referenceCount = 0;
         private static Edsdk.EdsCameraAddedHandler __edsCameraAddedHandler;
         private static event EventHandler GlobalCameraAdded;
+
+        static EosFramework()
+        {
+            EosFramework.LogInstance = new ConsoleLog();
+        }
+
+        public static IEosLog LogInstance { get; set; }
 
         public event EventHandler CameraAdded
         {
