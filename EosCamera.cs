@@ -30,13 +30,21 @@ namespace Canon.Eos.Framework
         public new string Artist
         {
             get { return base.Artist; }
-            set { this.SetPropertyStringData(Edsdk.PropID_Artist, value, 64); }
+            set
+            {
+                const int maximumArtistLengthInBytes = 64;
+                this.SetPropertyStringData(Edsdk.PropID_Artist, value, maximumArtistLengthInBytes);
+            }
         }
 
         public new string Copyright
         {
             get { return base.Copyright; }
-            set { this.SetPropertyStringData(Edsdk.PropID_Copyright, value, 64); }
+            set
+            {
+                const int maximumCopyrightLengthInBytes = 64;
+                this.SetPropertyStringData(Edsdk.PropID_Copyright, value, maximumCopyrightLengthInBytes);
+            }
         }
 
         public string DeviceDescription
@@ -64,7 +72,11 @@ namespace Canon.Eos.Framework
         public new string OwnerName
         {
             get { return base.OwnerName; }
-            set { this.SetPropertyStringData(Edsdk.PropID_OwnerName, value, 32); }
+            set
+            {
+                const int maximumOwnerNameLengthInBytes = 32;
+                this.SetPropertyStringData(Edsdk.PropID_OwnerName, value, maximumOwnerNameLengthInBytes);
+            }
         }        
                         
         public string PortName
@@ -110,14 +122,14 @@ namespace Canon.Eos.Framework
         {
             this.CheckDisposed();
 
-            EosAssert.NotOk(Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UILock, 0), "Failed to lock camera.");
+            EosAssert.NotOk(Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UILock), "Failed to lock camera.");
             try
             {
                 action();
             }
             finally
             {
-                Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UIUnLock, 0);
+                Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UIUnLock);
             }
         }                        
 
@@ -131,7 +143,7 @@ namespace Canon.Eos.Framework
             this.SavePicturesTo = EosCameraSavePicturesTo.Host;                        
         }        
 
-        private void SendCommand(uint command, int parameter)
+        private void SendCommand(uint command, int parameter = 0)
         {
             this.EnsureOpenSession();            
             EosAssert.NotOk(Edsdk.EdsSendCommand(this.Handle, command, parameter), string.Format("Failed to send command: {0} with parameter {1}", command, parameter));            
@@ -168,7 +180,7 @@ namespace Canon.Eos.Framework
 
         public void TakePicture()
         {
-            this.SendCommand(Edsdk.CameraCommand_TakePicture, 0);            
+            this.SendCommand(Edsdk.CameraCommand_TakePicture);            
         }
 
         public override string ToString()

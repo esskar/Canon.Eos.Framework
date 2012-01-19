@@ -1203,7 +1203,7 @@ namespace Canon.Eos.Framework.Internal
         //  Returns:    Any of the sdk errors.
         -----------------------------------------------------------------------------*/
         [DllImport("EDSDK.dll")]
-        public extern static uint EdsSendStatusCommand(IntPtr inCameraRef, uint inCameraState, int inParam);
+        public extern static uint EdsSendStatusCommand(IntPtr inCameraRef, uint inCameraState, int inParam = 0);
 
         /*-----------------------------------------------------------------------------
         //

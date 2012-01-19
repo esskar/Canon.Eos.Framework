@@ -77,14 +77,9 @@ namespace Canon.Eos.Framework
                 string.Format("Failed to set property integer data: propertyId {0}, data {1}", propertyId, data));
         }
 
-        private static byte[] ConvertStringToBytes(string data)
-        {
-            return Encoding.ASCII.GetBytes(data + "\0");
-        }
-
         protected void SetPropertyStringData(uint propertyId, string data, int maxByteLength)
         {
-            var bytes = EosObject.ConvertStringToBytes(data);
+            var bytes = Util.ConvertStringToBytesWithNullByteAtEnd(data);
             if (bytes.Length > maxByteLength)
                 throw new ArgumentException(string.Format("'{0}' converted to bytes is longer than {1}.", data, maxByteLength), "data");
 
