@@ -3,7 +3,10 @@ using System.Threading;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using Canon.Eos.Framework.Eventing;
+using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Threading;
 
 namespace Canon.Eos.Framework
 {
@@ -23,7 +26,7 @@ namespace Canon.Eos.Framework
                 this.LiveViewStopped(this, eventArgs);
         }
 
-        private void OnLiveViewUpdate(EosLiveViewEventArgs eventArgs)
+        private void OnLiveViewUpdate(EosLivePictureEventArgs eventArgs)
         {
             if (this.LiveViewUpdate != null)
                 this.LiveViewUpdate(this, eventArgs);
@@ -41,22 +44,22 @@ namespace Canon.Eos.Framework
             var evfImage = IntPtr.Zero;
             try
             {
-                EosAssert.NotOk(Edsdk.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
-                EosAssert.NotOk(Edsdk.EdsCreateEvfImageRefCdecl(memoryStream, out evfImage), "Failed to create evf image.");
-                EosAssert.NotOk(Edsdk.EdsDownloadEvfImageCdecl(this.Handle, evfImage), "Failed to download evf image.");
+                this.Assert(Edsdk.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
+                this.Assert(Edsdk.EdsCreateEvfImageRefCdecl(memoryStream, out evfImage), "Failed to create evf image.");
+                this.Assert(Edsdk.EdsDownloadEvfImageCdecl(this.Handle, evfImage), "Failed to download evf image.");
 
                 IntPtr evfImagePtr;
-                EosAssert.NotOk(Edsdk.EdsGetPointer(memoryStream, out evfImagePtr), "Failed to get evf image pointer.");
+                this.Assert(Edsdk.EdsGetPointer(memoryStream, out evfImagePtr), "Failed to get evf image pointer.");
                 if (evfImagePtr != IntPtr.Zero)
                 {
                     uint evfImageLen;
-                    EosAssert.NotOk(Edsdk.EdsGetLength(memoryStream, out evfImageLen), "Failed to get evf image pointer length.");
+                    this.Assert(Edsdk.EdsGetLength(memoryStream, out evfImageLen), "Failed to get evf image pointer length.");
 
                     var buffer = new byte[evfImageLen];
                     Marshal.Copy(evfImagePtr, buffer, 0, buffer.Length);
 
                     using (var imageStream = new MemoryStream(buffer))
-                        this.OnLiveViewUpdate(new EosLiveViewEventArgs(Image.FromStream(imageStream)));                    
+                        this.OnLiveViewUpdate(new EosLivePictureEventArgs(Image.FromStream(imageStream)));                    
                 }
             }
             catch (EosException eosEx)
@@ -77,20 +80,12 @@ namespace Canon.Eos.Framework
 
         private void StartDownloadEvfInBackGround()
         {
-            // is this the way to do it?
-            ThreadPool.QueueUserWorkItem(x =>
+            var backgroundWorker = new BackgroundWorker();
+            backgroundWorker.Work(() =>
             {
-                try
-                {
-                    while (this.DownloadEvf())
-                    {
-                        Thread.Sleep(125);
-                    }
-                }
-                catch
-                {
-                    return;
-                }
+                while (this.DownloadEvf())
+                    Thread.Sleep(125);
+                return true;
             });
         }
 
@@ -139,8 +134,6 @@ namespace Canon.Eos.Framework
                     break;
             }
             return Edsdk.EDS_ERR_OK;
-        }
-
-        
+        }        
     }
 }

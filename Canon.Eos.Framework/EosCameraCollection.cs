@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
@@ -11,7 +13,7 @@ namespace Canon.Eos.Framework
 
         internal EosCameraCollection()
         {
-            EosAssert.NotOk(Edsdk.EdsGetCameraList(out _cameraList), "Failed to get cameras.");
+            this.Assert(Edsdk.EdsGetCameraList(out _cameraList), "Failed to get cameras.");
         }
 
         protected internal override void DisposeUnmanaged()
@@ -41,14 +43,12 @@ namespace Canon.Eos.Framework
                     throw new IndexOutOfRangeException();
 
                 IntPtr camera;
-                EosAssert.NotOk(Edsdk.EdsGetChildAtIndex(_cameraList, index, out camera), string.Format("Failed to get camera #{0}.", index+1));
+                this.Assert(Edsdk.EdsGetChildAtIndex(_cameraList, index, out camera), string.Format("Failed to get camera #{0}.", index+1));
                 if (camera == IntPtr.Zero)
                     throw new EosException(Edsdk.EDS_ERR_DEVICE_NOT_FOUND, string.Format("Failed to get camera #{0}.", index+1));
                 return new EosCamera(camera);
             }
         }
-
-        #region IEnumerable<Camera> Members
 
         public IEnumerator<EosCamera> GetEnumerator()
         {
@@ -57,18 +57,12 @@ namespace Canon.Eos.Framework
                 this.CheckDisposed();
                 yield return this[i];
             }
-        }
-
-        #endregion
-
-        #region IEnumerable Members
+        }        
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             this.CheckDisposed();
             return this.GetEnumerator();
         }
-
-        #endregion
     }
 }

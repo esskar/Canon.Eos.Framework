@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
+using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
@@ -58,7 +58,7 @@ namespace Canon.Eos.Framework
         protected long GetPropertyIntegerData(uint propertyId)
         {
             uint data;
-            EosAssert.NotOk(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
+            this.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
                 string.Format("Failed to get property integer data: propertyId {0}", propertyId));
             return data;
         }
@@ -66,14 +66,14 @@ namespace Canon.Eos.Framework
         protected string GetPropertyStringData(uint propertyId)
         {
             string data;
-            EosAssert.NotOk(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
+            this.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
                 string.Format("Failed to get property string data: propertyId {0}", propertyId));
             return data;
         }        
 
         protected void SetPropertyIntegerData(uint propertyId, long data)
         {
-            EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)), (uint)data), 
+            this.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)), (uint)data), 
                 string.Format("Failed to set property integer data: propertyId {0}, data {1}", propertyId, data));
         }
 
@@ -83,7 +83,7 @@ namespace Canon.Eos.Framework
             if (bytes.Length > maxByteLength)
                 throw new ArgumentException(string.Format("'{0}' converted to bytes is longer than {1}.", data, maxByteLength), "data");
 
-            EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, bytes.Length, bytes),
+            this.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, bytes.Length, bytes),
                 string.Format("Failed to set property string data: propertyId {0}, data {1}", propertyId, data));
         }
     }

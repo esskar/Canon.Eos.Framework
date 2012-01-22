@@ -1,8 +1,9 @@
 ﻿using System;
+using Canon.Eos.Framework.Interfaces;
 
 namespace Canon.Eos.Framework
 {
-    public abstract class EosDisposable : IDisposable
+    public abstract class EosDisposable : IDisposable, IEosAssertable
     {
         ~EosDisposable()
         {
@@ -32,14 +33,10 @@ namespace Canon.Eos.Framework
             }
         }
 
-        #region IDisposable Members
-
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
+
 
 namespace Canon.Eos.Framework
 {
@@ -8,7 +10,7 @@ namespace Canon.Eos.Framework
     {        
         private static readonly object __referenceLock = new object();
         private static readonly object __eventLock = new object();
-        private static int __referenceCount = 0;
+        private static int __referenceCount;
         private static Edsdk.EdsCameraAddedHandler __edsCameraAddedHandler;
         private static event EventHandler GlobalCameraAdded;
 
@@ -45,7 +47,7 @@ namespace Canon.Eos.Framework
                 {
                     try
                     {
-                        EosAssert.NotOk(Edsdk.EdsInitializeSDK(), "Failed to initialize the SDK.");
+                        this.Assert(Edsdk.EdsInitializeSDK(), "Failed to initialize the SDK.");
                         __edsCameraAddedHandler = EosFramework.HandleCameraAddedEvent;
                         Edsdk.EdsSetCameraAddedHandler(__edsCameraAddedHandler, IntPtr.Zero);
                     }
@@ -55,7 +57,7 @@ namespace Canon.Eos.Framework
                     }
                     catch (Exception ex)
                     {
-                        EosAssert.NotOk(0xFFFFFFFF, "Failed to initialize the SDK.", ex);
+                        this.Assert(0xFFFFFFFF, "Failed to initialize the SDK.", ex);
                     }
                 }
                 ++__referenceCount;

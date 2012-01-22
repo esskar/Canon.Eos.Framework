@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Canon.Eos.Framework.Eventing;
+using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
@@ -17,12 +20,14 @@ namespace Canon.Eos.Framework
         public event EventHandler Shutdown;
         public event EventHandler LiveViewStarted;
         public event EventHandler LiveViewStopped;
-        public event EventHandler<EosLiveViewEventArgs> LiveViewUpdate;
+        public event EventHandler<EosLivePictureEventArgs> LiveViewUpdate;
+        public event EventHandler<EosPictureInfoEventArgs> PictureTaken;
+        public event EventHandler<EosVolumeInfoEventArgs> VolumeInfoChanged;
 
         internal EosCamera(IntPtr camera)
             : base(camera)
         {
-            EosAssert.NotOk(Edsdk.EdsGetDeviceInfo(this.Handle, out _deviceInfo), "Failed to get device info.");                        
+            this.Assert(Edsdk.EdsGetDeviceInfo(this.Handle, out _deviceInfo), "Failed to get device info.");                  
             this.SetEventHandlers();
             this.EnsureOpenSession();
         }        
@@ -90,11 +95,12 @@ namespace Canon.Eos.Framework
 
             this.EnsureOpenSession();
 
-            EosAssert.NotOk(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), (int)savePictureTo), "Failed to set SaveTo location.");
+            this.Assert(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), 
+                (int)savePictureTo), "Failed to set SaveTo location.");
             this.RunSynced(() =>
             {
                 var capacity = new Edsdk.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
-                EosAssert.NotOk(Edsdk.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
+                this.Assert(Edsdk.EdsSetCapacity(this.Handle, capacity), "Failed to set capacity.");
             });            
         }
 
@@ -111,7 +117,7 @@ namespace Canon.Eos.Framework
             this.CheckDisposed();
             if (!_sessionOpened)
             {
-                EosAssert.NotOk(Edsdk.EdsOpenSession(this.Handle), "Failed to open session.");
+                this.Assert(Edsdk.EdsOpenSession(this.Handle), "Failed to open session.");
                 _sessionOpened = true;
             }
         }
@@ -120,7 +126,8 @@ namespace Canon.Eos.Framework
         {
             this.CheckDisposed();
 
-            EosAssert.NotOk(Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UILock), "Failed to lock camera.");
+            this.Assert(Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UILock), 
+                "Failed to lock camera.");
             try
             {
                 action();
@@ -140,31 +147,37 @@ namespace Canon.Eos.Framework
 
         public void SavePicturesToHost(string pathFolder)
         {
+            if (string.IsNullOrWhiteSpace(pathFolder))
+                throw new ArgumentException("Cannot be null or white space.", "pathFolder");
+
             this.CheckDisposed();
 
             _picturePath = pathFolder;
             if (!Directory.Exists(_picturePath))
                 Directory.CreateDirectory(_picturePath);
 
-            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Host);                         
+            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Host);
         }        
 
-        private void SendCommand(uint command, int parameter = 0)
+        private uint SendCommand(uint command, int parameter = 0)
         {
             this.EnsureOpenSession();            
-            EosAssert.NotOk(Edsdk.EdsSendCommand(this.Handle, command, parameter), string.Format("Failed to send command: {0} with parameter {1}", command, parameter));            
+            return Edsdk.EdsSendCommand(this.Handle, command, parameter);
         }
 
         private void SetEventHandlers()
         {   
             _edsStateEventHandler = this.HandleStateEvent;
-            EosAssert.NotOk(Edsdk.EdsSetCameraStateEventHandler(this.Handle, Edsdk.StateEvent_All, _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");                     
+            this.Assert(Edsdk.EdsSetCameraStateEventHandler(this.Handle, Edsdk.StateEvent_All, 
+                _edsStateEventHandler, IntPtr.Zero), "Failed to set state handler.");                     
 
             _edsObjectEventHandler = this.HandleObjectEvent;            
-            EosAssert.NotOk(Edsdk.EdsSetObjectEventHandler(this.Handle, Edsdk.ObjectEvent_All, _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
+            this.Assert(Edsdk.EdsSetObjectEventHandler(this.Handle, Edsdk.ObjectEvent_All, 
+                _edsObjectEventHandler, IntPtr.Zero), "Failed to set object handler.");
 
             _edsPropertyEventHandler = this.HandlePropertyEvent;
-            EosAssert.NotOk(Edsdk.EdsSetPropertyEventHandler(this.Handle, Edsdk.PropertyEvent_All, _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
+            this.Assert(Edsdk.EdsSetPropertyEventHandler(this.Handle, Edsdk.PropertyEvent_All, 
+                _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
         }
 
         public void StartLiveView()
@@ -186,7 +199,8 @@ namespace Canon.Eos.Framework
 
         public void TakePicture()
         {
-            this.SendCommand(Edsdk.CameraCommand_TakePicture);            
+            this.Assert(this.SendCommand(Edsdk.CameraCommand_TakePicture), 
+                "Failed to take picture.");                                 
         }
 
         public override string ToString()
