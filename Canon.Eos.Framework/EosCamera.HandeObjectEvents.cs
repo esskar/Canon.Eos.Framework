@@ -3,12 +3,15 @@ using System.IO;
 using Canon.Eos.Framework.Eventing;
 using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework
 {
     partial class EosCamera
     {
-        private void DownloadImage(IntPtr directoryItem, string locationDir = null)
+        private EosImageTransporter _transporter = new EosImageTransporter();
+            
+        private void TransferTakenPicture(IntPtr directoryItem, string locationDir)
         {
             string pictureFilePath;
 
@@ -41,7 +44,7 @@ namespace Canon.Eos.Framework
                     Edsdk.EdsRelease(stream);
             }
 
-            this.OnPictureTaken(new EosPictureInfoEventArgs(pictureFilePath));
+            this.OnPictureTaken(new EosFileImageEventArgs(pictureFilePath));
         }
 
         private void GetGetDirectoryItemInfo(IntPtr directory, out Edsdk.EdsDirectoryItemInfo directoryItemInfo)
@@ -49,7 +52,7 @@ namespace Canon.Eos.Framework
             this.Assert(Edsdk.EdsGetDirectoryItemInfo(directory, out directoryItemInfo), "Failed to get directory item info.");
         }
 
-        private void OnPictureTaken(EosPictureInfoEventArgs eventArgs)
+        private void OnPictureTaken(EosImageEventArgs eventArgs)
         {
             if (this.PictureTaken != null)
                 this.PictureTaken(this, eventArgs);
@@ -86,7 +89,7 @@ namespace Canon.Eos.Framework
         
         private void OnObjectEventDirItemCreated(IntPtr sender, IntPtr context)
         {
-            this.DownloadImage(sender);
+            this.OnPictureTaken(_transporter.TransportInMemory(sender));
         }
         
         private void OnObjectEventDirItemRemoved(IntPtr sender, IntPtr context)
@@ -103,7 +106,7 @@ namespace Canon.Eos.Framework
         
         private void OnObjectEventDirItemRequestTransfer(IntPtr sender)
         {
-            this.DownloadImage(sender, _picturePath);
+            this.OnPictureTaken(_transporter.TransportAsFile(sender, _picturePath));
         }
         
         private void OnObjectEventDirItemRequestTransferDt(IntPtr sender, IntPtr context)

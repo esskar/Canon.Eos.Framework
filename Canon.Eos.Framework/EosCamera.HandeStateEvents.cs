@@ -1,5 +1,6 @@
 ﻿using System;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework
 {

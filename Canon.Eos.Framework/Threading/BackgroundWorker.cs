@@ -5,7 +5,14 @@ namespace Canon.Eos.Framework.Threading
 {
     internal class BackgroundWorker
     {
-        public TResult Work<TResult>(Func<TResult> callback, int millisecondsWaitTimeout = Timeout.Infinite)
+        public void Work(Action callback)
+        {
+            var state = new State<bool>(false) { Callback = () => { callback(); return true; } };
+            if (!ThreadPool.QueueUserWorkItem(BackgroundWorker.PerformUserWork<bool>, state))
+                throw new ApplicationException("Unable to queue user work item.");
+        }
+
+        public TResult WorkAndWait<TResult>(Func<TResult> callback, int millisecondsWaitTimeout = Timeout.Infinite)
         {
             var state = new State<TResult> { Callback = callback };
             if (!ThreadPool.QueueUserWorkItem(BackgroundWorker.PerformUserWork<TResult>, state))
@@ -19,21 +26,24 @@ namespace Canon.Eos.Framework.Threading
         {
             var state = (State<T>)workItem;
             state.Result = state.Callback();
-            state.WaitHandle.Set();
+            if(state.WaitHandle != null)
+                state.WaitHandle.Set();
         }
 
         private class State<T>
         {
-            public State()
+            public State(bool wait = true)
             {
-                this.WaitHandle = new ManualResetEvent(false);
+                if(wait)
+                    this.WaitHandle = new ManualResetEvent(false);
             }
 
             public T Result { get; set; }
 
             public Func<T> Callback { get; set; }
 
-            public ManualResetEvent WaitHandle { get; private set; }
+            public ManualResetEvent WaitHandle { get; private set; }            
+                 
         }
     }
 }

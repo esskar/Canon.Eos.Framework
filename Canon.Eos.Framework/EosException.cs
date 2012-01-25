@@ -1,22 +1,23 @@
 ﻿using System;
+using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Internal;
 
 namespace Canon.Eos.Framework
 {
     public class EosException : Exception
     {
-        public EosException(long eosErrorCode)
+        internal EosException(long eosErrorCode)
         {
             this.EosErrorCode = (EosErrorCode)eosErrorCode;
         }
 
-        public EosException(long eosErrorCode, string message)
+        internal EosException(long eosErrorCode, string message)
             : base(message) 
         {
             this.EosErrorCode = (EosErrorCode)eosErrorCode;
         }
 
-        public EosException(long eosErrorCode, string message, Exception innerException)
+        internal EosException(long eosErrorCode, string message, Exception innerException)
             : base(message, innerException) 
         {
             this.EosErrorCode = (EosErrorCode)eosErrorCode;

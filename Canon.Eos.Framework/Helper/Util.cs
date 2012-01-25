@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Canon.Eos.Framework.Internal
+namespace Canon.Eos.Framework.Helper
 {
     public static class Util
     {

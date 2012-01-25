@@ -146,6 +146,6 @@ namespace Canon.Eos.Framework
         TakePictureCardProtectNg = 0x00008D08,
 
 
-        LastGenericErrorPlusOne = 0x000000F5,
+        LastGenericErrorPlusOne = 0x000000F5,        
     }
 }

@@ -3,7 +3,7 @@
 namespace Canon.Eos.Framework
 {
     [Flags]
-    public enum EosCameraEvfOutputDevice : int
+    public enum EosLiveViewDevice : int
     {
         None = 0,
         Camera = 1,

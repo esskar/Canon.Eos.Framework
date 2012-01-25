@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework
 {

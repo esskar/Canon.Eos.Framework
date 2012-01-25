@@ -3,13 +3,18 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Canon.Eos.Framework.Eventing;
 using Canon.Eos.Framework.Extensions;
-using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework
 {
     public sealed partial class EosCamera : EosObject
     {
+        const int WaitTimeoutForNextLiveDownload = 125;
+        const int MaximumCopyrightLengthInBytes = 64;
+        const int MaximumArtistLengthInBytes = 64;
+        const int MaximumOwnerNameLengthInBytes = 32;
+
         private Edsdk.EdsDeviceInfo _deviceInfo;
         private bool _sessionOpened;
         private string _picturePath;
@@ -17,17 +22,18 @@ namespace Canon.Eos.Framework
         private Edsdk.EdsPropertyEventHandler _edsPropertyEventHandler;
         private Edsdk.EdsStateEventHandler _edsStateEventHandler;        
 
-        public event EventHandler Shutdown;
         public event EventHandler LiveViewStarted;
         public event EventHandler LiveViewStopped;
-        public event EventHandler<EosLivePictureEventArgs> LiveViewUpdate;
-        public event EventHandler<EosPictureInfoEventArgs> PictureTaken;
+        public event EventHandler<EosMemoryImageEventArgs> LiveViewUpdate;
+        public event EventHandler<EosImageEventArgs> PictureTaken;
+        public event EventHandler Shutdown;        
         public event EventHandler<EosVolumeInfoEventArgs> VolumeInfoChanged;
 
         internal EosCamera(IntPtr camera)
             : base(camera)
         {
-            this.Assert(Edsdk.EdsGetDeviceInfo(this.Handle, out _deviceInfo), "Failed to get device info.");                  
+            this.Assert(Edsdk.EdsGetDeviceInfo(this.Handle, out _deviceInfo), 
+                "Failed to get device info.");                  
             this.SetEventHandlers();
             this.EnsureOpenSession();
         }        
@@ -35,21 +41,15 @@ namespace Canon.Eos.Framework
         public new string Artist
         {
             get { return base.Artist; }
-            set
-            {
-                const int maximumArtistLengthInBytes = 64;
-                this.SetPropertyStringData(Edsdk.PropID_Artist, value, maximumArtistLengthInBytes);
-            }
+            set { this.SetPropertyStringData(Edsdk.PropID_Artist, value, 
+                EosCamera.MaximumArtistLengthInBytes); }
         }
 
         public new string Copyright
         {
             get { return base.Copyright; }
-            set
-            {
-                const int maximumCopyrightLengthInBytes = 64;
-                this.SetPropertyStringData(Edsdk.PropID_Copyright, value, maximumCopyrightLengthInBytes);
-            }
+            set { this.SetPropertyStringData(Edsdk.PropID_Copyright, value, 
+                EosCamera.MaximumCopyrightLengthInBytes); }
         }
 
         public string DeviceDescription
@@ -57,15 +57,15 @@ namespace Canon.Eos.Framework
             get { return _deviceInfo.szDeviceDescription; }
         }
 
-        public bool IsEvfMode
+        public bool IsInLiveViewMode
         {
             get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_Mode) != 0; }
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_Mode, value ? 1 : 0); }
         }
 
-        public EosCameraEvfOutputDevice EvfOutputDevice
+        public EosLiveViewDevice LiveViewDevice
         {
-            get { return (EosCameraEvfOutputDevice)this.GetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice); }
+            get { return (EosLiveViewDevice)this.GetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice); }
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice, (long)value); }
         }
 
@@ -77,26 +77,26 @@ namespace Canon.Eos.Framework
         public new string OwnerName
         {
             get { return base.OwnerName; }
-            set
-            {
-                const int maximumOwnerNameLengthInBytes = 32;
-                this.SetPropertyStringData(Edsdk.PropID_OwnerName, value, maximumOwnerNameLengthInBytes);
-            }
+            set { this.SetPropertyStringData(Edsdk.PropID_OwnerName, value, 
+                EosCamera.MaximumOwnerNameLengthInBytes); }
         }        
                         
         public string PortName
         {
             get { return _deviceInfo.szPortName; }
-        }       
+        }
+
+        [Flags]
+        private enum SaveLocation { Camera = 1, Host = 2 };
  
-        private void ChangePicturesSaveLocation(EosCameraSavePicturesTo savePictureTo)
+        private void ChangePicturesSaveLocation(SaveLocation saveLocation)
         {
             this.CheckDisposed();
 
             this.EnsureOpenSession();
 
             this.Assert(Edsdk.EdsSetPropertyData(this.Handle, Edsdk.PropID_SaveTo, 0, Marshal.SizeOf(typeof(int)), 
-                (int)savePictureTo), "Failed to set SaveTo location.");
+                (int)saveLocation), "Failed to set SaveTo location.");
             this.RunSynced(() =>
             {
                 var capacity = new Edsdk.EdsCapacity { NumberOfFreeClusters = 0x7FFFFFFF, BytesPerSector = 0x1000, Reset = 1 };
@@ -136,16 +136,26 @@ namespace Canon.Eos.Framework
             {
                 Edsdk.EdsSendStatusCommand(this.Handle, Edsdk.CameraState_UIUnLock);
             }
-        }
+        }        
 
         public void SavePictiresToCamera()
         {
             this.CheckDisposed();
             _picturePath = null;
-            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Camera);
+            this.ChangePicturesSaveLocation(SaveLocation.Camera);
         }
 
         public void SavePicturesToHost(string pathFolder)
+        {
+            this.SavePicturesToHost(pathFolder, SaveLocation.Host);
+        }
+
+        public void SavePicturesToHostAndCamera(string pathFolder)
+        {
+            this.SavePicturesToHost(pathFolder, SaveLocation.Camera);
+        }
+
+        private void SavePicturesToHost(string pathFolder, SaveLocation saveLocation)
         {
             if (string.IsNullOrWhiteSpace(pathFolder))
                 throw new ArgumentException("Cannot be null or white space.", "pathFolder");
@@ -156,7 +166,7 @@ namespace Canon.Eos.Framework
             if (!Directory.Exists(_picturePath))
                 Directory.CreateDirectory(_picturePath);
 
-            this.ChangePicturesSaveLocation(EosCameraSavePicturesTo.Host);
+            this.ChangePicturesSaveLocation(saveLocation | SaveLocation.Host);
         }        
 
         private uint SendCommand(uint command, int parameter = 0)
@@ -182,19 +192,14 @@ namespace Canon.Eos.Framework
 
         public void StartLiveView()
         {
-            if (!this.IsEvfMode)
-                this.IsEvfMode = true;
-
-            var device = this.EvfOutputDevice;
-            device |= EosCameraEvfOutputDevice.Host;
-            this.EvfOutputDevice = device;
+            if (!this.IsInLiveViewMode)
+                this.IsInLiveViewMode = true;
+            this.LiveViewDevice = this.LiveViewDevice | EosLiveViewDevice.Host;
         }
 
         public void StopLiveView()
         {
-            var device = this.EvfOutputDevice;
-            device &= ~EosCameraEvfOutputDevice.Host;
-            this.EvfOutputDevice = device;
+            this.LiveViewDevice = this.LiveViewDevice & ~EosLiveViewDevice.Host;
         }
 
         public void TakePicture()

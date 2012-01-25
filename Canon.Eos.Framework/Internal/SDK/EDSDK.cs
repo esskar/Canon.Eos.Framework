@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Canon.Eos.Framework.Internal
+namespace Canon.Eos.Framework.Internal.SDK
 {
 
     internal partial class Edsdk

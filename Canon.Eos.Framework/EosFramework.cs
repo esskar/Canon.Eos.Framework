@@ -1,7 +1,9 @@
 ﻿using System;
 using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal;
+using Canon.Eos.Framework.Internal.SDK;
 
 
 namespace Canon.Eos.Framework
@@ -81,6 +83,12 @@ namespace Canon.Eos.Framework
         {
             this.CheckDisposed();
             return new EosCameraCollection();
+        }
+
+        public EosCamera GetCamera()
+        {
+            using (var cameras = this.GetCameraCollection())
+                return cameras.Count > 0 ? cameras[0] : null;
         }
 
         protected internal override void DisposeUnmanaged()
