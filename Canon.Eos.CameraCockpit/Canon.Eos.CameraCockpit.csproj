@@ -78,7 +78,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\PhotoBooth\Canon.Eos.Framework\Canon.Eos.Framework.csproj">
+    <ProjectReference Include="..\Canon.Eos.Framework\Canon.Eos.Framework.csproj">
       <Project>{F809DBB6-E0E8-47A8-92ED-C24575576A5D}</Project>
       <Name>Canon.Eos.Framework</Name>
     </ProjectReference>

@@ -9,48 +9,7 @@ namespace Canon.Eos.Framework
 {
     partial class EosCamera
     {
-        private EosImageTransporter _transporter = new EosImageTransporter();
-            
-        private void TransferTakenPicture(IntPtr directoryItem, string locationDir)
-        {
-            string pictureFilePath;
-
-            var stream = IntPtr.Zero;
-            try
-            {
-                Edsdk.EdsDirectoryItemInfo directoryItemInfo;
-                this.GetGetDirectoryItemInfo(directoryItem, out directoryItemInfo);
-
-                if (directoryItemInfo.isFolder != 0)
-                    return;
-
-                pictureFilePath = Path.Combine(locationDir ?? Environment.CurrentDirectory, directoryItemInfo.szFileName);
-
-                this.Assert(Edsdk.EdsCreateFileStream(pictureFilePath, Edsdk.EdsFileCreateDisposition.CreateAlways, Edsdk.EdsAccess.ReadWrite, out stream), "Failed to create file stream");
-                this.Assert(Edsdk.EdsDownload(directoryItem, directoryItemInfo.Size, stream), "Failed to create file stream");
-                this.Assert(Edsdk.EdsDownloadComplete(directoryItem), "Failed to complete download");                
-            }
-            catch (EosException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new EosException(-1, "Unexpected exception while downloading.", ex);
-            }
-            finally
-            {
-                if (stream != IntPtr.Zero)
-                    Edsdk.EdsRelease(stream);
-            }
-
-            this.OnPictureTaken(new EosFileImageEventArgs(pictureFilePath));
-        }
-
-        private void GetGetDirectoryItemInfo(IntPtr directory, out Edsdk.EdsDirectoryItemInfo directoryItemInfo)
-        {            
-            this.Assert(Edsdk.EdsGetDirectoryItemInfo(directory, out directoryItemInfo), "Failed to get directory item info.");
-        }
+        private readonly EosImageTransporter _transporter = new EosImageTransporter();
 
         private void OnPictureTaken(EosImageEventArgs eventArgs)
         {

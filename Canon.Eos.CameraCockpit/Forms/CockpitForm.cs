@@ -9,7 +9,7 @@ namespace Canon.Eos.CameraCockpit.Forms
 {
     public partial class CockpitForm : Form
     {
-        private FrameworkManager _manager;
+        private readonly FrameworkManager _manager;
 
         public CockpitForm()
         {
@@ -40,7 +40,7 @@ namespace Canon.Eos.CameraCockpit.Forms
             this.LoadCameras();
         }
 
-        private void HandlePictureTaken(object sender, EosPictureInfoEventArgs e)
+        private void HandlePictureTaken(object sender, EosImageEventArgs e)
         {
             this.UpdatePicture(e.GetImage());
         }
