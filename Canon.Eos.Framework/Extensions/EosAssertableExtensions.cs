@@ -1,6 +1,5 @@
 ﻿using System;
 using Canon.Eos.Framework.Interfaces;
-using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework.Extensions
@@ -28,32 +27,6 @@ namespace Canon.Eos.Framework.Extensions
         {
             if (assertable.HasFailed(result))
                 throw new EosPropertyException(result, message) { PropertyId = propertyId, PropertyValue = propertyValue };
-        }
-
-        public static void TryAndCatch(this IEosAssertable assertable, Action action, string unexpectedMessage = null)
-        {
-            assertable.TryAndCatch(action, null, unexpectedMessage);
-        }
-
-        public static void TryAndCatch(this IEosAssertable assertable, Action action, Action final, string unexpectedMessage = null)
-        {
-            try
-            {
-                action();
-            }
-            catch (EosException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new EosException(-1, unexpectedMessage ?? "Unexpected exception", ex);
-            }
-            finally
-            {
-                if (final != null)
-                    final();
-            }
         }
     }
 }

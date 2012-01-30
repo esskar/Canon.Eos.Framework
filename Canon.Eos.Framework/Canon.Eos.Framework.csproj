@@ -36,6 +36,8 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EosBatteryQuality.cs" />
+    <Compile Include="EosBracketMode.cs" />
     <Compile Include="EosCamera.cs" />
     <Compile Include="EosCamera.HandePropertyEvents.cs">
       <DependentUpon>EosCamera.cs</DependentUpon>
@@ -47,14 +49,20 @@
     <Compile Include="EosCamera.HandeObjectEvents.cs">
       <DependentUpon>EosCamera.cs</DependentUpon>
     </Compile>
+    <Compile Include="EosCompressLevel.cs" />
+    <Compile Include="EosImageFormat.cs" />
+    <Compile Include="EosImageQuality.cs" />
+    <Compile Include="EosImageSize.cs" />
     <Compile Include="EosLiveViewDevice.cs" />
     <Compile Include="EosErrorCode.cs" />
     <Compile Include="EosException.cs" />
     <Compile Include="EosFramework.cs" />
     <Compile Include="EosDisposable.cs" />
     <Compile Include="EosObject.cs" />
+    <Compile Include="EosPropertyAttribute.cs" />
     <Compile Include="EosPropertyException.cs" />
     <Compile Include="EosVolumeInfo.cs" />
+    <Compile Include="EosWhiteBalance.cs" />
     <Compile Include="Eventing\EosFileImageEventArgs.cs" />
     <Compile Include="Eventing\EosImageEventArgs.cs" />
     <Compile Include="Eventing\EosVolumeInfoEventArgs.cs" />

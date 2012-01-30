@@ -63,6 +63,8 @@ namespace Canon.Eos.CameraCockpit.Forms
                 _cameraCollectionComboBox.Items.Clear();
                 foreach (var camera in _manager.GetCameras())
                 {
+                    var iq = camera.ImageQuality;
+
                     camera.Shutdown += this.HandleCameraShutdown;
                     camera.PictureTaken += this.HandlePictureTaken;
                     _cameraCollectionComboBox.Items.Add(camera);

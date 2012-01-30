@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Canon.Eos.Framework")]
@@ -13,3 +14,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("3a70507d-c50a-47ca-b920-303d687631ec")]
 [assembly: AssemblyVersion("0.1.0.1")]
 [assembly: AssemblyFileVersion("0.1.0.1")]
+[assembly: InternalsVisibleTo("Canon.Eos.UnitTests")]

@@ -45,6 +45,19 @@ namespace Canon.Eos.Framework
                 EosCamera.MaximumArtistLengthInBytes); }
         }
 
+        [EosProperty(Edsdk.PropID_BatteryQuality)]
+        public long BatteryLevel
+        {
+            get { return this.GetPropertyIntegerData(Edsdk.PropID_BatteryLevel); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_BatteryLevel, value); }
+        }
+
+        public EosBatteryQuality BatteryQuality
+        {
+            get { return (EosBatteryQuality)this.GetPropertyIntegerData(Edsdk.PropID_BatteryQuality); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_BatteryQuality, (long)value); }
+        }
+
         public new string Copyright
         {
             get { return base.Copyright; }
@@ -57,16 +70,39 @@ namespace Canon.Eos.Framework
             get { return _deviceInfo.szDeviceDescription; }
         }
 
+        [EosProperty(Edsdk.PropID_ImageQuality)]        
+        public EosImageQuality ImageQuality
+        {
+            get { return EosImageQuality.Create(this.GetPropertyIntegerData(Edsdk.PropID_ImageQuality)); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_ImageQuality, value.ToBitMask()); }
+        }
+
+        [EosProperty(Edsdk.PropID_Evf_Mode)]        
         public bool IsInLiveViewMode
         {
             get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_Mode) != 0; }
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_Mode, value ? 1 : 0); }
         }
 
+        [EosProperty(Edsdk.PropID_Evf_ColorTemperature)]
+        public long LiveViewColorTemperature
+        {
+            get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_ColorTemperature); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_ColorTemperature, value); }
+        }
+
+        [EosProperty(Edsdk.PropID_Evf_OutputDevice)]
         public EosLiveViewDevice LiveViewDevice
         {
             get { return (EosLiveViewDevice)this.GetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice); }
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_OutputDevice, (long)value); }
+        }
+
+        [EosProperty(Edsdk.PropID_Evf_WhiteBalance)]
+        public EosWhiteBalance LiveViewWhiteBalance
+        {
+            get { return (EosWhiteBalance)this.GetPropertyIntegerData(Edsdk.PropID_Evf_WhiteBalance); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_WhiteBalance, (long)value); }
         }
 
         public bool IsLegacy

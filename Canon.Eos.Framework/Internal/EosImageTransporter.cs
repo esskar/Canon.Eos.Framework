@@ -44,20 +44,39 @@ namespace Canon.Eos.Framework.Internal
         {
             if (stream == IntPtr.Zero)
                 return;
-            this.TryAndCatch(
-                () => {
-                    this.Assert(Edsdk.EdsDownload(directoryItem, size, stream), "Failed to download to stream");
-                    this.Assert(Edsdk.EdsDownloadComplete(directoryItem), "Failed to complete download");
-                },
-                "Unexpected exception while downloading.");
+            try
+            {
+                this.Assert(Edsdk.EdsDownload(directoryItem, size, stream), "Failed to download to stream");
+                this.Assert(Edsdk.EdsDownloadComplete(directoryItem), "Failed to complete download");
+            }
+            catch (EosException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new EosException(-1, "Unexpected exception while downloading.", ex);
+            }            
         }
 
         private void Transport(IntPtr directoryItem, uint size, IntPtr stream, bool destroyStream)
         {
-            this.TryAndCatch(
-                () => { this.Download(directoryItem, size, stream); },
-                () => { if (destroyStream) this.DestroyStream(ref stream); },
-                "Unexpected exception while transporting.");
+            try
+            {
+                this.Download(directoryItem, size, stream);
+            }
+            catch (EosException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new EosException(-1, "Unexpected exception while transporting.", ex);
+            }
+            finally
+            {
+                if (destroyStream) this.DestroyStream(ref stream);
+            }
         }
 
         public EosImageEventArgs TransportAsFile(IntPtr directoryItem, string imageBasePath)
@@ -67,7 +86,7 @@ namespace Canon.Eos.Framework.Internal
             var stream = this.CreateFileStream(imageFilePath);
             this.Transport(directoryItem, directoryItemInfo.Size, stream, true);            
 
-            return new EosFileImageEventArgs(imageBasePath);
+            return new EosFileImageEventArgs(imageFilePath);
         }
 
         public EosImageEventArgs TransportInMemory(IntPtr directoryItem)
