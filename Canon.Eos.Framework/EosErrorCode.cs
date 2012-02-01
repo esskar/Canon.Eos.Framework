@@ -136,14 +136,14 @@ namespace Canon.Eos.Framework
         ObjectNotReady = 0x0000A102,
 
         /* Capture Error */
-        TakePictureAfNg = 0x00008D01,
+        TakePictureAutoFocusFailed = 0x00008D01,
         TakePictureReserved = 0x00008D02,
-        TakePictureMirrorUpNg = 0x00008D03,
-        TakePictureSensorCleaningNg = 0x00008D04,
-        TakePictureSilenceNg = 0x00008D05,
-        TakePictureNoCardNg = 0x00008D06,
-        TakePictureCardNg = 0x00008D07,
-        TakePictureCardProtectNg = 0x00008D08,
+        TakePictureMirrorUp = 0x00008D03,
+        TakePictureSensorCleaning = 0x00008D04,
+        TakePictureSilence = 0x00008D05,
+        TakePictureNoCard = 0x00008D06,
+        TakePictureCard = 0x00008D07,
+        TakePictureCardProtect = 0x00008D08,
 
 
         LastGenericErrorPlusOne = 0x000000F5,        
