@@ -1,5 +1,4 @@
 ﻿using System;
-using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
 
 namespace Canon.Eos.Framework
@@ -9,7 +8,7 @@ namespace Canon.Eos.Framework
         private void OnStateEventShutdown(EventArgs eventArgs)
         {
             if (this.Shutdown != null)
-                this.Shutdown(this, eventArgs);
+                this.Shutdown.BeginInvoke(this, eventArgs, null, null);
         }
 
         private uint HandleStateEvent(uint stateEvent, uint param, IntPtr context)

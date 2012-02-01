@@ -14,7 +14,7 @@ namespace Canon.Eos.CameraCockpit
         public IEnumerable<EosCamera> GetCameras()
         {
             using (var cameras = _framework.GetCameraCollection())
-                return cameras.Select(camera => camera).ToArray();
+                return cameras.ToArray();
         }
 
         public void LoadFramework()

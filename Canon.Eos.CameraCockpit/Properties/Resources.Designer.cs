@@ -70,6 +70,24 @@ namespace Canon.Eos.CameraCockpit.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start Live View.
+        /// </summary>
+        internal static string StartLiveViewButtonLabel {
+            get {
+                return ResourceManager.GetString("StartLiveViewButtonLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop Live View.
+        /// </summary>
+        internal static string StopLiveViewButtonLabel {
+            get {
+                return ResourceManager.GetString("StopLiveViewButtonLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to take a picture..
         /// </summary>
         internal static string TakePictureError {

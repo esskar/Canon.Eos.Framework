@@ -56,7 +56,18 @@ namespace Canon.Eos.Framework
             for (var i = 0; i < this.Count; ++i)
             {
                 this.CheckDisposed();
-                yield return this[i];
+                EosCamera camera = null;
+                try
+                {
+                    camera = this[i];
+                }
+                catch (EosException ex)
+                {
+                    if(ex.EosErrorCode != EosErrorCode.CommDisconnected)                        
+                        throw;
+                }
+                if(camera != null)
+                    yield return camera;
             }
         }        
 

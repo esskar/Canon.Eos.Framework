@@ -14,9 +14,9 @@ namespace Canon.Eos.CameraCockpit.Forms
         public CockpitForm()
         {
             _manager = new FrameworkManager();
-            _manager.CameraAdded += this.HandleCameraAdded;
+            _manager.CameraAdded += this.HandleCameraAdded;            
             this.InitializeComponent();
-        }
+        }        
         
         protected override void OnLoad(EventArgs e)
         {
@@ -27,7 +27,8 @@ namespace Canon.Eos.CameraCockpit.Forms
 
         private EosCamera GetSelectedCamera()
         {
-            return _cameraCollectionComboBox.SelectedIndex >= 0 ? _cameraCollectionComboBox.SelectedItem as EosCamera : null;
+            return _cameraCollectionComboBox.Items.Count > 0 && _cameraCollectionComboBox.SelectedIndex >= 0
+                ? _cameraCollectionComboBox.SelectedItem as EosCamera : null;
         }
 
         private void HandleCameraAdded(object sender, EventArgs e)
@@ -35,12 +36,42 @@ namespace Canon.Eos.CameraCockpit.Forms
             this.LoadCameras();
         }
 
+        private void HandleCameraSelectionChanged(object sender, EventArgs e)
+        {
+            this.UpdateCameraControls();
+        }
+
+        private void UpdateCameraControls()
+        {
+            var camera = this.GetSelectedCamera();
+            if (camera == null)
+            {
+                _liveViewButton.Enabled = false;
+                _takePictureButton.Enabled = false;
+            }
+            else
+            {
+                _liveViewButton.Enabled = true;
+                if (camera.IsInHostLiveViewMode)
+                {
+                    _liveViewButton.Text = Resources.StopLiveViewButtonLabel;
+                    _takePictureButton.Enabled = false;
+                }
+                else
+                {
+                    _liveViewButton.Text = Resources.StartLiveViewButtonLabel;
+                    _takePictureButton.Enabled = true;
+                }
+            }
+        }
+
         private void HandleCameraShutdown(object sender, EventArgs e)
         {
             this.LoadCameras();
+            this.UpdateCameraControls();
         }
 
-        private void HandlePictureTaken(object sender, EosImageEventArgs e)
+        private void HandlePictureUpdate(object sender, EosImageEventArgs e)
         {
             this.UpdatePicture(e.GetImage());
         }
@@ -67,7 +98,8 @@ namespace Canon.Eos.CameraCockpit.Forms
                 foreach (var camera in _manager.GetCameras())
                 {
                     camera.Shutdown += this.HandleCameraShutdown;
-                    camera.PictureTaken += this.HandlePictureTaken;
+                    camera.PictureTaken += this.HandlePictureUpdate;
+                    camera.LiveViewUpdate += this.HandlePictureUpdate;
                     _cameraCollectionComboBox.Items.Add(camera);
                 }
                 if (_cameraCollectionComboBox.Items.Count > 0)
@@ -77,7 +109,12 @@ namespace Canon.Eos.CameraCockpit.Forms
 
         private void StartUp()
         {
-            this.SafeCall(() => _manager.LoadFramework(), ex => {
+            this.SafeCall(() => {
+                _cameraCollectionComboBox.SelectedIndexChanged += this.HandleCameraSelectionChanged;
+                _liveViewButton.Enabled = false;
+                _takePictureButton.Enabled = false;
+                _manager.LoadFramework();                
+            }, ex => {
                 MessageBox.Show(ex.ToString(), Resources.FrameworkLoadError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             });            
@@ -107,6 +144,21 @@ namespace Canon.Eos.CameraCockpit.Forms
                 if (this.InvokeRequired) this.Invoke(exceptionHandler, ex);
                 else exceptionHandler(ex);
             }
+        }
+
+        private void HandleLiveViewButtonClick(object sender, EventArgs e)
+        {
+            this.SafeCall(() =>
+            {
+                var camera = this.GetSelectedCamera();
+                if (camera == null)
+                    return;
+
+                if (camera.IsInHostLiveViewMode) camera.StopLiveView();
+                else camera.StartLiveView();
+
+                this.UpdateCameraControls();
+            }, ex => { });
         }
     }
 }

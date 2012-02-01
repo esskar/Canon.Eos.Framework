@@ -32,13 +32,14 @@
         {
             this._pictureBox = new System.Windows.Forms.PictureBox();
             this._controlPanel = new System.Windows.Forms.Panel();
+            this._selectCameraLabel = new System.Windows.Forms.Label();
+            this._cameraCollectionComboBox = new System.Windows.Forms.ComboBox();
             this._takePictureButton = new System.Windows.Forms.Button();
             this._storePicturesOnCameraRadioButton = new System.Windows.Forms.RadioButton();
             this._storePicturesOnHostRadioButton = new System.Windows.Forms.RadioButton();
             this._picturesOnHostLocationTextBox = new System.Windows.Forms.TextBox();
             this._browsePicturesOnHostLocationButton = new System.Windows.Forms.Button();
-            this._cameraCollectionComboBox = new System.Windows.Forms.ComboBox();
-            this._selectCameraLabel = new System.Windows.Forms.Label();
+            this._liveViewButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this._controlPanel.SuspendLayout();
             this.SuspendLayout();
@@ -59,6 +60,7 @@
             // 
             this._controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this._controlPanel.Controls.Add(this._liveViewButton);
             this._controlPanel.Controls.Add(this._selectCameraLabel);
             this._controlPanel.Controls.Add(this._cameraCollectionComboBox);
             this._controlPanel.Controls.Add(this._takePictureButton);
@@ -66,6 +68,24 @@
             this._controlPanel.Name = "_controlPanel";
             this._controlPanel.Size = new System.Drawing.Size(200, 504);
             this._controlPanel.TabIndex = 1;
+            // 
+            // _selectCameraLabel
+            // 
+            this._selectCameraLabel.AutoSize = true;
+            this._selectCameraLabel.Location = new System.Drawing.Point(3, 5);
+            this._selectCameraLabel.Name = "_selectCameraLabel";
+            this._selectCameraLabel.Size = new System.Drawing.Size(76, 13);
+            this._selectCameraLabel.TabIndex = 2;
+            this._selectCameraLabel.Text = "Select Camera";
+            // 
+            // _cameraCollectionComboBox
+            // 
+            this._cameraCollectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cameraCollectionComboBox.FormattingEnabled = true;
+            this._cameraCollectionComboBox.Location = new System.Drawing.Point(2, 21);
+            this._cameraCollectionComboBox.Name = "_cameraCollectionComboBox";
+            this._cameraCollectionComboBox.Size = new System.Drawing.Size(194, 21);
+            this._cameraCollectionComboBox.TabIndex = 1;
             // 
             // _takePictureButton
             // 
@@ -115,23 +135,15 @@
             this._browsePicturesOnHostLocationButton.Text = "...";
             this._browsePicturesOnHostLocationButton.UseVisualStyleBackColor = true;
             // 
-            // _cameraCollectionComboBox
+            // _liveViewButton
             // 
-            this._cameraCollectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._cameraCollectionComboBox.FormattingEnabled = true;
-            this._cameraCollectionComboBox.Location = new System.Drawing.Point(2, 21);
-            this._cameraCollectionComboBox.Name = "_cameraCollectionComboBox";
-            this._cameraCollectionComboBox.Size = new System.Drawing.Size(194, 21);
-            this._cameraCollectionComboBox.TabIndex = 1;
-            // 
-            // _selectCameraLabel
-            // 
-            this._selectCameraLabel.AutoSize = true;
-            this._selectCameraLabel.Location = new System.Drawing.Point(3, 5);
-            this._selectCameraLabel.Name = "_selectCameraLabel";
-            this._selectCameraLabel.Size = new System.Drawing.Size(76, 13);
-            this._selectCameraLabel.TabIndex = 2;
-            this._selectCameraLabel.Text = "Select Camera";
+            this._liveViewButton.Location = new System.Drawing.Point(-1, 123);
+            this._liveViewButton.Name = "_liveViewButton";
+            this._liveViewButton.Size = new System.Drawing.Size(197, 69);
+            this._liveViewButton.TabIndex = 3;
+            this._liveViewButton.Text = "LiveView";
+            this._liveViewButton.UseVisualStyleBackColor = true;
+            this._liveViewButton.Click += new System.EventHandler(this.HandleLiveViewButtonClick);
             // 
             // CockpitForm
             // 
@@ -166,6 +178,7 @@
         private System.Windows.Forms.Button _browsePicturesOnHostLocationButton;
         private System.Windows.Forms.Label _selectCameraLabel;
         private System.Windows.Forms.ComboBox _cameraCollectionComboBox;
+        private System.Windows.Forms.Button _liveViewButton;
     }
 }
 

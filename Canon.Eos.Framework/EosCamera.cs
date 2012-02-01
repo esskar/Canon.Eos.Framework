@@ -84,6 +84,11 @@ namespace Canon.Eos.Framework
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_Mode, value ? 1 : 0); }
         }
 
+        public bool IsInHostLiveViewMode
+        {
+            get { return this.IsInLiveViewMode && this.LiveViewDevice.HasFlag(EosLiveViewDevice.Host); }
+        }
+
         [EosProperty(Edsdk.PropID_Evf_AFMode)]
         public EosLiveViewAutoFocus LiveViewAutoFocus
         {

@@ -120,6 +120,12 @@
   <data name="FrameworkLoadError" xml:space="preserve">
     <value>Failed to load the framework.</value>
   </data>
+  <data name="StartLiveViewButtonLabel" xml:space="preserve">
+    <value>Start Live View</value>
+  </data>
+  <data name="StopLiveViewButtonLabel" xml:space="preserve">
+    <value>Stop Live View</value>
+  </data>
   <data name="TakePictureError" xml:space="preserve">
     <value>Failed to take a picture.</value>
   </data>
