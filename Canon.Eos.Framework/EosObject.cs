@@ -32,6 +32,33 @@ namespace Canon.Eos.Framework
             get { return this.GetPropertyStringData(Edsdk.PropID_Copyright); }
         }
 
+        [EosProperty(Edsdk.PropID_FocusInfo)]
+        public EosFocus Focus
+        {
+            get
+            {
+                int dataSize;
+                Edsdk.EdsDataType dataType;
+                this.Assert(Edsdk.EdsGetPropertySize(this.Handle, Edsdk.PropID_FocusInfo, 0, out dataType, out dataSize),
+                    "Failed to get property size for FocusInfo.", Edsdk.PropID_FocusInfo);
+
+                if (dataType != Edsdk.EdsDataType.FocusInfo)
+                    throw new EosException(-1, "Returned DataType was not FocusInfo.");
+
+                var ptr = Marshal.AllocHGlobal(dataSize);
+                try
+                {
+                    this.Assert(Edsdk.EdsGetPropertyData(this.Handle, Edsdk.PropID_FocusInfo, 0, dataSize, ptr),
+                        "Failed to get FocusInfo.");
+                    return EosFocus.Create((Edsdk.EdsFocusInfo)Marshal.PtrToStructure(ptr, typeof(Edsdk.EdsFocusInfo)));
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(ptr);
+                }
+            }
+        }
+
         [EosProperty(Edsdk.PropID_FirmwareVersion)]
         public string FirmwareVersion
         {

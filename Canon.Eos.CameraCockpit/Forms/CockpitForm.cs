@@ -47,9 +47,12 @@ namespace Canon.Eos.CameraCockpit.Forms
 
         private void HandleTakePictureButtonClick(object sender, EventArgs e)
         {
-            var camera = this.GetSelectedCamera();
-            if (camera != null)
-                camera.TakePicture();
+            this.SafeCall(() =>
+            {
+                var camera = this.GetSelectedCamera();
+                if (camera != null)
+                    camera.TakePicture();
+            }, ex => MessageBox.Show(ex.ToString(), Resources.TakePictureError, MessageBoxButtons.OK, MessageBoxIcon.Error));
         }                
 
         private void LoadCameras()
@@ -74,15 +77,10 @@ namespace Canon.Eos.CameraCockpit.Forms
 
         private void StartUp()
         {
-            try
-            {
-                _manager.LoadFramework();
-            }
-            catch(EosException eosex)
-            {
-                MessageBox.Show(eosex.ToString(), Resources.FrameworkLoadError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            this.SafeCall(() => _manager.LoadFramework(), ex => {
+                MessageBox.Show(ex.ToString(), Resources.FrameworkLoadError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
-            }            
+            });            
         }
 
         private void TearDown()
@@ -96,6 +94,19 @@ namespace Canon.Eos.CameraCockpit.Forms
                 this.Invoke(new Action(() => this.UpdatePicture(image)));
             else
                 _pictureBox.Image = image;
+        }
+
+        private void SafeCall(Action action, Action<Exception> exceptionHandler)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                if (this.InvokeRequired) this.Invoke(exceptionHandler, ex);
+                else exceptionHandler(ex);
+            }
         }
     }
 }

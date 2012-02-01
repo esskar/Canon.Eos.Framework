@@ -80,8 +80,15 @@ namespace Canon.Eos.Framework
         [EosProperty(Edsdk.PropID_Evf_Mode)]        
         public bool IsInLiveViewMode
         {
-            get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_Mode) != 0; }
+            get { return this.GetPropertyIntegerData(Edsdk.PropID_Evf_Mode) != 0; }                    
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_Mode, value ? 1 : 0); }
+        }
+
+        [EosProperty(Edsdk.PropID_Evf_AFMode)]
+        public EosLiveViewAutoFocus LiveViewAutoFocus
+        {
+            get { return (EosLiveViewAutoFocus)this.GetPropertyIntegerData(Edsdk.PropID_Evf_AFMode); }
+            set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_AFMode, (long)value); }
         }
 
         [EosProperty(Edsdk.PropID_Evf_ColorTemperature)]
@@ -103,7 +110,7 @@ namespace Canon.Eos.Framework
         {
             get { return (EosWhiteBalance)this.GetPropertyIntegerData(Edsdk.PropID_Evf_WhiteBalance); }
             set { this.SetPropertyIntegerData(Edsdk.PropID_Evf_WhiteBalance, (long)value); }
-        }
+        }        
 
         public bool IsLegacy
         {
@@ -226,11 +233,19 @@ namespace Canon.Eos.Framework
                 _edsPropertyEventHandler, IntPtr.Zero), "Failed to set object handler.");            
         }
 
-        public void StartLiveView()
+        public EosLiveViewAutoFocus StartLiveView()
         {
             if (!this.IsInLiveViewMode)
                 this.IsInLiveViewMode = true;
             this.LiveViewDevice = this.LiveViewDevice | EosLiveViewDevice.Host;
+            return this.LiveViewAutoFocus;
+        }
+
+        public EosLiveViewAutoFocus StartLiveView(EosLiveViewAutoFocus autoFocus)
+        {
+            this.StartLiveView();
+            this.LiveViewAutoFocus = autoFocus;
+            return this.LiveViewAutoFocus;
         }
 
         public void StopLiveView()
@@ -246,7 +261,7 @@ namespace Canon.Eos.Framework
 
         public override string ToString()
         {
-            return this.DeviceDescription;
+            return this.DeviceDescription ?? string.Empty;
         }               
     }
 }

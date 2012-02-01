@@ -37,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EosBatteryQuality.cs" />
-    <Compile Include="EosBracketMode.cs" />
     <Compile Include="EosCamera.cs" />
     <Compile Include="EosCamera.HandePropertyEvents.cs">
       <DependentUpon>EosCamera.cs</DependentUpon>
@@ -50,9 +49,12 @@
       <DependentUpon>EosCamera.cs</DependentUpon>
     </Compile>
     <Compile Include="EosCompressLevel.cs" />
+    <Compile Include="EosFocus.cs" />
+    <Compile Include="EosFocusPoint.cs" />
     <Compile Include="EosImageFormat.cs" />
     <Compile Include="EosImageQuality.cs" />
     <Compile Include="EosImageSize.cs" />
+    <Compile Include="EosLiveViewAutoFocus.cs" />
     <Compile Include="EosLiveViewDevice.cs" />
     <Compile Include="EosErrorCode.cs" />
     <Compile Include="EosException.cs" />

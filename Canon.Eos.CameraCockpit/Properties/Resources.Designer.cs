@@ -68,5 +68,14 @@ namespace Canon.Eos.CameraCockpit.Properties {
                 return ResourceManager.GetString("FrameworkLoadError", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to take a picture..
+        /// </summary>
+        internal static string TakePictureError {
+            get {
+                return ResourceManager.GetString("TakePictureError", resourceCulture);
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@
 using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Interfaces;
-using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
 
 
