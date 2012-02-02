@@ -7,8 +7,6 @@ namespace Canon.Eos.Framework.Helper
 {
     internal static class Util
     {
-        public readonly static Asserter Asserter = new Asserter();
-
         public static string ConvertCamelCasedStringToFriendlyString(string camelCase)
         {
             return Regex.Replace(camelCase, @"(?<a>(?<!^)((?:[A-Z][a-z])|(?:(?<!^[A-Z]+)[A-Z0-9]+(?:(?=[A-Z][a-z])|$))|(?:[0-9]+)))", @" ${a}");

@@ -70,7 +70,6 @@
     <Compile Include="Eventing\EosImageEventArgs.cs" />
     <Compile Include="Eventing\EosLiveImageEventArgs.cs" />
     <Compile Include="Eventing\EosVolumeInfoEventArgs.cs" />
-    <Compile Include="Helper\Asserter.cs" />
     <Compile Include="Interfaces\IEosAssertable.cs" />
     <Compile Include="Interfaces\IEosLog.cs" />
     <Compile Include="Helper\ConsoleLog.cs" />
