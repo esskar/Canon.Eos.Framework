@@ -162,6 +162,7 @@ namespace Canon.Eos.Framework.Internal.SDK
         public const uint   PropID_Evf_Zoom                = 0x00000507;
         public const uint   PropID_Evf_ZoomPosition        = 0x00000508;
         public const uint   PropID_Evf_FocusAid            = 0x00000509;
+        public const uint   PropID_Evf_ZoomRect            = 0x00000541;
         public const uint   PropID_Evf_Histogram           = 0x0000050A;
         public const uint   PropID_Evf_ImagePosition       = 0x0000050B;
 		public const uint   PropID_Evf_HistogramStatus     = 0x0000050C;

@@ -12,6 +12,12 @@ namespace Canon.Eos.Framework.Eventing
                 return Image.FromStream(stream);
         }
 
+        public virtual Bitmap GetBitmap()
+        {
+            using (var stream = this.GetStream())
+                return new Bitmap(stream);
+        }
+
         public abstract Stream GetStream();
     }
 }

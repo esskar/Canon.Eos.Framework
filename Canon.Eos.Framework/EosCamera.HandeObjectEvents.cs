@@ -1,7 +1,6 @@
 ﻿using System;
-using System.IO;
 using Canon.Eos.Framework.Eventing;
-using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
 
@@ -26,7 +25,7 @@ namespace Canon.Eos.Framework
         private void OnObjectEventVolumeInfoChanged(IntPtr sender)
         {
             Edsdk.EdsVolumeInfo volumeInfo;
-            this.Assert(Edsdk.EdsGetVolumeInfo(sender, out volumeInfo), "Failed to get volume info.");
+            Util.Assert(Edsdk.EdsGetVolumeInfo(sender, out volumeInfo), "Failed to get volume info.");
 
             this.OnVolumeInfoChanged(new EosVolumeInfoEventArgs(new EosVolumeInfo
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using Canon.Eos.Framework.Extensions;
 using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal.SDK;
@@ -48,7 +47,7 @@ namespace Canon.Eos.Framework
                 {
                     try
                     {
-                        this.Assert(Edsdk.EdsInitializeSDK(), "Failed to initialize the SDK.");
+                        Util.Assert(Edsdk.EdsInitializeSDK(), "Failed to initialize the SDK.");
                         __edsCameraAddedHandler = EosFramework.HandleCameraAddedEvent;
                         Edsdk.EdsSetCameraAddedHandler(__edsCameraAddedHandler, IntPtr.Zero);
                     }
@@ -58,7 +57,7 @@ namespace Canon.Eos.Framework
                     }
                     catch (Exception ex)
                     {
-                        this.Assert(0xFFFFFFFF, "Failed to initialize the SDK.", ex);
+                        Util.Assert(0xFFFFFFFF, "Failed to initialize the SDK.", ex);
                     }
                 }
                 ++__referenceCount;

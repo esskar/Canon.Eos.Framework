@@ -7,8 +7,8 @@ namespace Canon.Eos.Framework
     {
         internal static EosFocus Create(Edsdk.EdsFocusInfo focus)
         {
-            var focusPoints = new EosFocusPoint[focus.focusPoint.Length];
-            for (var i = 0; i < focus.focusPoint.Length; ++i)
+            var focusPoints = new EosFocusPoint[focus.pointNumber];
+            for (var i = 0; i < focusPoints.Length; ++i)
                 focusPoints[i] = EosFocusPoint.Create(focus.focusPoint[i]);
             
             return new EosFocus

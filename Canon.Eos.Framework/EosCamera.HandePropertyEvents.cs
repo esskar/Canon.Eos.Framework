@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Canon.Eos.Framework.Eventing;
-using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
 using Canon.Eos.Framework.Threading;
@@ -36,15 +36,22 @@ namespace Canon.Eos.Framework
                 return false;
 
             var memoryStream = IntPtr.Zero;
-            var evfImage = IntPtr.Zero;
             try
             {
-                this.Assert(Edsdk.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
-                this.Assert(Edsdk.EdsCreateEvfImageRefCdecl(memoryStream, out evfImage), "Failed to create evf image.");
-                this.Assert(Edsdk.EdsDownloadEvfImageCdecl(this.Handle, evfImage), "Failed to download evf image.");
+                Util.Assert(Edsdk.EdsCreateMemoryStream(0, out memoryStream), "Failed to create memory stream.");
+                using (var image = EosLiveImage.CreateFromStream(memoryStream))
+                {
+                    Util.Assert(Edsdk.EdsDownloadEvfImageCdecl(this.Handle, image.Handle), "Failed to download evf image.");
 
-                var converter = new EosConverter();
-                this.OnLiveViewUpdate(new EosMemoryImageEventArgs(converter.ConvertImageStreamToBytes(memoryStream)));
+                    var converter = new EosConverter();
+                    this.OnLiveViewUpdate(new EosLiveImageEventArgs(converter.ConvertImageStreamToBytes(memoryStream))
+                    {
+                        Zoom = image.Zoom,
+                        ZommBounds = image.ZoomBounds,
+                        ImagePosition = image.ImagePosition,
+                        Histogram = image.Histogram,
+                    });
+                }
             }
             catch (EosException eosEx)
             {
@@ -53,8 +60,6 @@ namespace Canon.Eos.Framework
             }
             finally
             {
-                if (evfImage != IntPtr.Zero)
-                    Edsdk.EdsRelease(evfImage);
                 if (memoryStream != IntPtr.Zero)
                     Edsdk.EdsRelease(memoryStream);
             }

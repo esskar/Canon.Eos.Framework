@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Canon.Eos.Framework.Eventing;
-using Canon.Eos.Framework.Extensions;
+using Canon.Eos.Framework.Helper;
 using Canon.Eos.Framework.Interfaces;
 using Canon.Eos.Framework.Internal.SDK;
 
@@ -12,14 +12,14 @@ namespace Canon.Eos.Framework.Internal
         private Edsdk.EdsDirectoryItemInfo GetGetDirectoryItemInfo(IntPtr directoryItem)
         {
             Edsdk.EdsDirectoryItemInfo directoryItemInfo;
-            this.Assert(Edsdk.EdsGetDirectoryItemInfo(directoryItem, out directoryItemInfo), "Failed to get directory item info.");
+            Util.Assert(Edsdk.EdsGetDirectoryItemInfo(directoryItem, out directoryItemInfo), "Failed to get directory item info.");
             return directoryItemInfo;
         }
 
         private IntPtr CreateFileStream(string imageFilePath)
         {
             IntPtr stream;
-            this.Assert(Edsdk.EdsCreateFileStream(imageFilePath, Edsdk.EdsFileCreateDisposition.CreateAlways, 
+            Util.Assert(Edsdk.EdsCreateFileStream(imageFilePath, Edsdk.EdsFileCreateDisposition.CreateAlways, 
                 Edsdk.EdsAccess.ReadWrite, out stream), "Failed to create file stream");
             return stream;    
         }
@@ -27,7 +27,7 @@ namespace Canon.Eos.Framework.Internal
         private IntPtr CreateMemoryStream(uint size)
         {
             IntPtr stream;
-            this.Assert(Edsdk.EdsCreateMemoryStream(size, out stream), "Failed to create memory stream");
+            Util.Assert(Edsdk.EdsCreateMemoryStream(size, out stream), "Failed to create memory stream");
             return stream;
         }
 
@@ -35,7 +35,7 @@ namespace Canon.Eos.Framework.Internal
         {
             if(stream != IntPtr.Zero)
             {
-                this.Assert(Edsdk.EdsRelease(stream), "Failed to release stream");
+                Util.Assert(Edsdk.EdsRelease(stream), "Failed to release stream");
                 stream = IntPtr.Zero;
             }
         }
@@ -46,8 +46,8 @@ namespace Canon.Eos.Framework.Internal
                 return;
             try
             {
-                this.Assert(Edsdk.EdsDownload(directoryItem, size, stream), "Failed to download to stream");
-                this.Assert(Edsdk.EdsDownloadComplete(directoryItem), "Failed to complete download");
+                Util.Assert(Edsdk.EdsDownload(directoryItem, size, stream), "Failed to download to stream");
+                Util.Assert(Edsdk.EdsDownloadComplete(directoryItem), "Failed to complete download");
             }
             catch (EosException)
             {

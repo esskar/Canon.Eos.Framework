@@ -51,6 +51,7 @@
     <Compile Include="EosCompressLevel.cs" />
     <Compile Include="EosFocus.cs" />
     <Compile Include="EosFocusPoint.cs" />
+    <Compile Include="EosLiveImage.cs" />
     <Compile Include="EosImageFormat.cs" />
     <Compile Include="EosImageQuality.cs" />
     <Compile Include="EosImageSize.cs" />
@@ -67,8 +68,9 @@
     <Compile Include="EosWhiteBalance.cs" />
     <Compile Include="Eventing\EosFileImageEventArgs.cs" />
     <Compile Include="Eventing\EosImageEventArgs.cs" />
+    <Compile Include="Eventing\EosLiveImageEventArgs.cs" />
     <Compile Include="Eventing\EosVolumeInfoEventArgs.cs" />
-    <Compile Include="Extensions\EosAssertableExtensions.cs" />
+    <Compile Include="Helper\Asserter.cs" />
     <Compile Include="Interfaces\IEosAssertable.cs" />
     <Compile Include="Interfaces\IEosLog.cs" />
     <Compile Include="Helper\ConsoleLog.cs" />
