@@ -21,11 +21,6 @@ namespace Canon.Eos.Framework
             get { return _handle; }
         }
 
-        private bool IsCamera
-        {
-            get { return this is EosCamera; }
-        }
-
         [EosProperty(Edsdk.PropID_Artist)]
         public string Artist
         {
