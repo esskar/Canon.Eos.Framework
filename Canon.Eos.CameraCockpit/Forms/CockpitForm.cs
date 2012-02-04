@@ -43,6 +43,12 @@ namespace Canon.Eos.CameraCockpit.Forms
 
         private void UpdateCameraControls()
         {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(this.UpdateCameraControls));
+                return;
+            }
+
             var camera = this.GetSelectedCamera();
             if (camera == null)
             {

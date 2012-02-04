@@ -32,6 +32,7 @@
         {
             this._pictureBox = new System.Windows.Forms.PictureBox();
             this._controlPanel = new System.Windows.Forms.Panel();
+            this._liveViewButton = new System.Windows.Forms.Button();
             this._selectCameraLabel = new System.Windows.Forms.Label();
             this._cameraCollectionComboBox = new System.Windows.Forms.ComboBox();
             this._takePictureButton = new System.Windows.Forms.Button();
@@ -39,7 +40,6 @@
             this._storePicturesOnHostRadioButton = new System.Windows.Forms.RadioButton();
             this._picturesOnHostLocationTextBox = new System.Windows.Forms.TextBox();
             this._browsePicturesOnHostLocationButton = new System.Windows.Forms.Button();
-            this._liveViewButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this._controlPanel.SuspendLayout();
             this.SuspendLayout();
@@ -68,6 +68,16 @@
             this._controlPanel.Name = "_controlPanel";
             this._controlPanel.Size = new System.Drawing.Size(200, 504);
             this._controlPanel.TabIndex = 1;
+            // 
+            // _liveViewButton
+            // 
+            this._liveViewButton.Location = new System.Drawing.Point(-1, 123);
+            this._liveViewButton.Name = "_liveViewButton";
+            this._liveViewButton.Size = new System.Drawing.Size(197, 69);
+            this._liveViewButton.TabIndex = 3;
+            this._liveViewButton.Text = "LiveView";
+            this._liveViewButton.UseVisualStyleBackColor = true;
+            this._liveViewButton.Click += new System.EventHandler(this.HandleLiveViewButtonClick);
             // 
             // _selectCameraLabel
             // 
@@ -101,6 +111,7 @@
             // 
             this._storePicturesOnCameraRadioButton.AutoSize = true;
             this._storePicturesOnCameraRadioButton.Checked = true;
+            this._storePicturesOnCameraRadioButton.Enabled = false;
             this._storePicturesOnCameraRadioButton.Location = new System.Drawing.Point(12, 15);
             this._storePicturesOnCameraRadioButton.Name = "_storePicturesOnCameraRadioButton";
             this._storePicturesOnCameraRadioButton.Size = new System.Drawing.Size(145, 17);
@@ -112,6 +123,7 @@
             // _storePicturesOnHostRadioButton
             // 
             this._storePicturesOnHostRadioButton.AutoSize = true;
+            this._storePicturesOnHostRadioButton.Enabled = false;
             this._storePicturesOnHostRadioButton.Location = new System.Drawing.Point(12, 38);
             this._storePicturesOnHostRadioButton.Name = "_storePicturesOnHostRadioButton";
             this._storePicturesOnHostRadioButton.Size = new System.Drawing.Size(131, 17);
@@ -121,6 +133,7 @@
             // 
             // _picturesOnHostLocationTextBox
             // 
+            this._picturesOnHostLocationTextBox.Enabled = false;
             this._picturesOnHostLocationTextBox.Location = new System.Drawing.Point(30, 60);
             this._picturesOnHostLocationTextBox.Name = "_picturesOnHostLocationTextBox";
             this._picturesOnHostLocationTextBox.Size = new System.Drawing.Size(525, 20);
@@ -128,22 +141,13 @@
             // 
             // _browsePicturesOnHostLocationButton
             // 
+            this._browsePicturesOnHostLocationButton.Enabled = false;
             this._browsePicturesOnHostLocationButton.Location = new System.Drawing.Point(561, 60);
             this._browsePicturesOnHostLocationButton.Name = "_browsePicturesOnHostLocationButton";
             this._browsePicturesOnHostLocationButton.Size = new System.Drawing.Size(46, 20);
             this._browsePicturesOnHostLocationButton.TabIndex = 5;
             this._browsePicturesOnHostLocationButton.Text = "...";
             this._browsePicturesOnHostLocationButton.UseVisualStyleBackColor = true;
-            // 
-            // _liveViewButton
-            // 
-            this._liveViewButton.Location = new System.Drawing.Point(-1, 123);
-            this._liveViewButton.Name = "_liveViewButton";
-            this._liveViewButton.Size = new System.Drawing.Size(197, 69);
-            this._liveViewButton.TabIndex = 3;
-            this._liveViewButton.Text = "LiveView";
-            this._liveViewButton.UseVisualStyleBackColor = true;
-            this._liveViewButton.Click += new System.EventHandler(this.HandleLiveViewButtonClick);
             // 
             // CockpitForm
             // 

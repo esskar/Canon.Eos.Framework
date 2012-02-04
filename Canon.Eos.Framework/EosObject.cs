@@ -21,6 +21,11 @@ namespace Canon.Eos.Framework
             get { return _handle; }
         }
 
+        private bool IsCamera
+        {
+            get { return this is EosCamera; }
+        }
+
         [EosProperty(Edsdk.PropID_Artist)]
         public string Artist
         {
@@ -80,46 +85,69 @@ namespace Canon.Eos.Framework
             base.DisposeUnmanaged();
         }
 
+        protected virtual void ExecuteSetter(Action action) 
+        {
+            action();
+        }
+
+        protected virtual TResult ExecuteGetter<TResult>(Func<TResult> function)
+        {
+            return function();
+        }
+        
+
         internal int GetPropertyDataSize(uint propertyId, Edsdk.EdsDataType expectedDataType)
         {
-            int dataSize;
-            Edsdk.EdsDataType dataType;
-            Util.Assert(Edsdk.EdsGetPropertySize(this.Handle, propertyId, 0, out dataType, out dataSize),
-                "Failed to get property size.", propertyId);
-            //Util.AssertIf(expectedDataType != dataType, "DataType mismatch: Expected <{0}>, Actual <{1}>", expectedDataType, dataType);
-            return dataSize;
+            return this.ExecuteGetter(() =>
+            {
+                int dataSize;
+                Edsdk.EdsDataType dataType;
+                Util.Assert(Edsdk.EdsGetPropertySize(this.Handle, propertyId, 0, out dataType, out dataSize),
+                    "Failed to get property size.", propertyId);
+                //Util.AssertIf(expectedDataType != dataType, "DataType mismatch: Expected <{0}>, Actual <{1}>", expectedDataType, dataType);
+                return dataSize;
+            });
         }
 
         internal T GetPropertyStruct<T>(uint propertyId, Edsdk.EdsDataType expectedDataType) where T: struct
         {
-            var dataSize = this.GetPropertyDataSize(propertyId, expectedDataType);
-            var ptr = Marshal.AllocHGlobal(dataSize);
-            try
+            return this.ExecuteGetter(() =>
             {
-                Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, dataSize, ptr),
-                    "Failed to get required struct.", propertyId);
-                return (T)Marshal.PtrToStructure(ptr, typeof(T));
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+                var dataSize = this.GetPropertyDataSize(propertyId, expectedDataType);
+                var ptr = Marshal.AllocHGlobal(dataSize);
+                try
+                {
+                    Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, dataSize, ptr),
+                        "Failed to get required struct.", propertyId);
+                    return (T)Marshal.PtrToStructure(ptr, typeof(T));
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(ptr);
+                }
+            });
         }
         
         protected string GetPropertyDescription(uint propertyId)
         {
-            Edsdk.EdsPropertyDesc desc;
-            Util.Assert(Edsdk.EdsGetPropertyDesc(this.Handle, propertyId, out desc),
-                string.Format("Failed to get property description for data: propertyId {0}", propertyId), propertyId);
-            return null;
+            return this.ExecuteGetter(() =>
+            {
+                Edsdk.EdsPropertyDesc desc;
+                Util.Assert(Edsdk.EdsGetPropertyDesc(this.Handle, propertyId, out desc),
+                    string.Format("Failed to get property description for data: propertyId {0}", propertyId), propertyId);
+                return string.Empty;
+            });
         }
         
         protected long GetPropertyIntegerData(uint propertyId)
         {
-            uint data;
-            Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
-                string.Format("Failed to get property integer data: propertyId {0}", propertyId), propertyId);
-            return data;
+            return this.ExecuteGetter(() =>
+            {
+                uint data;
+                Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data),
+                    string.Format("Failed to get property integer data: propertyId {0}", propertyId), propertyId);
+                return data;
+            });
         }
 
         protected Point GetPropertyPointData(uint propertyId)
@@ -136,55 +164,63 @@ namespace Canon.Eos.Framework
 
         protected long[] GetPropertyIntegerArrayData(uint propertyId)
         {
-            var dataSize = this.GetPropertyDataSize(propertyId, Edsdk.EdsDataType.UInt32_Array);
-            var ptr = Marshal.AllocHGlobal(dataSize);
-            try
+            return this.ExecuteGetter(() =>
             {
-                Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, dataSize, ptr),
-                    "Failed to get required struct.", propertyId);
+                var dataSize = this.GetPropertyDataSize(propertyId, Edsdk.EdsDataType.UInt32_Array);
+                var ptr = Marshal.AllocHGlobal(dataSize);
+                try
+                {
+                    Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, dataSize, ptr),
+                        "Failed to get required struct.", propertyId);
 
-                var signed = new int[dataSize / Marshal.SizeOf(typeof(uint))];
-                Marshal.Copy(ptr, signed, 0, signed.Length);
-                return signed.Select(i => (long)(uint)i).ToArray();
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+                    var signed = new int[dataSize / Marshal.SizeOf(typeof(uint))];
+                    Marshal.Copy(ptr, signed, 0, signed.Length);
+                    return signed.Select(i => (long)(uint)i).ToArray();
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(ptr);
+                }
+            });
         }
-
 
         protected string GetPropertyStringData(uint propertyId)
         {
-            string data;
-            Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data), 
-                string.Format("Failed to get property string data: propertyId {0}", propertyId), propertyId);
-            return data;
+            return this.ExecuteGetter(() =>
+            {
+                string data;
+                Util.Assert(Edsdk.EdsGetPropertyData(this.Handle, propertyId, 0, out data),
+                    string.Format("Failed to get property string data: propertyId {0}", propertyId), propertyId);
+                return data;
+            });
         }
-
+        
         protected void SetPropertyIntegerData(uint propertyId, long data)
         {
-            Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)), (uint)data),
+            this.ExecuteSetter(() => Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)), (uint)data),
                 string.Format("Failed to set property integer data: propertyId {0}, data {1}", propertyId, data),
-                propertyId, data);
+                propertyId, data));
         }
 
         protected void SetPropertyIntegerArrayData(uint propertyId, uint[] data)
         {
-            Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint))*data.Length, data),
+            this.ExecuteSetter(() => Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(uint)) * data.Length, data),
                 string.Format("Failed to set property integer array data: propertyId {0}, data {1}", propertyId, data),
-                propertyId, data);
+                propertyId, data));
         }
 
         protected void SetPropertyStringData(uint propertyId, string data, int maxByteLength)
         {
-            var bytes = Util.ConvertStringToBytesWithNullByteAtEnd(data);
-            if (bytes.Length > maxByteLength)
-                throw new ArgumentException(string.Format("'{0}' converted to bytes is longer than {1}.", data, maxByteLength), "data");
+            this.ExecuteSetter(() =>
+            {
+                var bytes = Util.ConvertStringToBytesWithNullByteAtEnd(data);
+                if (bytes.Length > maxByteLength)
+                    throw new ArgumentException(string.Format("'{0}' converted to bytes is longer than {1}.", data, maxByteLength), "data");
 
-            Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, bytes.Length, bytes),
-                string.Format("Failed to set property string data: propertyId {0}, data {1}", propertyId, data),
-                propertyId, data);
+                Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, bytes.Length, bytes),
+                    string.Format("Failed to set property string data: propertyId {0}, data {1}", propertyId, data),
+                    propertyId, data);
+            });
         }
     }
 }
