@@ -19,8 +19,17 @@ namespace Canon.Eos.Framework
             EosFramework.LogInstance = new ConsoleLog();
         }
 
+        /// <summary>
+        /// Gets or sets the log instance.
+        /// </summary>
+        /// <value>
+        /// The log instance.
+        /// </value>
         public static IEosLog LogInstance { get; set; }
 
+        /// <summary>
+        /// Occurs when a camera is added to the host,
+        /// </summary>
         public event EventHandler CameraAdded
         {
             add 
@@ -77,12 +86,20 @@ namespace Canon.Eos.Framework
             return Edsdk.EDS_ERR_OK;
         }
 
+        /// <summary>
+        /// Gets a collection of cameras currenly connected to the host.
+        /// </summary>
+        /// <returns></returns>
         public EosCameraCollection GetCameraCollection()
         {
             this.CheckDisposed();
             return new EosCameraCollection();
         }
 
+        /// <summary>
+        /// Gets the first camera available.
+        /// </summary>
+        /// <returns></returns>
         public EosCamera GetCamera()
         {
             using (var cameras = this.GetCameraCollection())

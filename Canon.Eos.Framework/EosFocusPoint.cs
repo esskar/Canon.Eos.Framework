@@ -21,12 +21,36 @@ namespace Canon.Eos.Framework
             };
         }
 
+        /// <summary>
+        /// Gets or sets the bounds.
+        /// </summary>
+        /// <value>
+        /// The bounds.
+        /// </value>
         public Rectangle Bounds { get; private set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is in focus.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is in focus; otherwise, <c>false</c>.
+        /// </value>
         public bool IsInFocus { get; private set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is valid.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is valid; otherwise, <c>false</c>.
+        /// </value>
         public bool IsValid { get; private set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is selected.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is selected; otherwise, <c>false</c>.
+        /// </value>
         public bool IsSelected { get; private set; }        
     }
 }

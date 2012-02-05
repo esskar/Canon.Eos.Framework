@@ -22,6 +22,9 @@ namespace Canon.Eos.Framework
             base.DisposeUnmanaged();
         }
 
+        /// <summary>
+        /// Gets the number of cameras in this instance.
+        /// </summary>
         public int Count
         {
             get
@@ -33,6 +36,9 @@ namespace Canon.Eos.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="Canon.Eos.Framework.EosCamera"/> at the specified index.
+        /// </summary>
         public EosCamera this[int index]
         {
             get
@@ -49,6 +55,10 @@ namespace Canon.Eos.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<EosCamera> GetEnumerator()
         {
             for (var i = 0; i < this.Count; ++i)

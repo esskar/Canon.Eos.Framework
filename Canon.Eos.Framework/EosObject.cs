@@ -21,18 +21,27 @@ namespace Canon.Eos.Framework
             get { return _handle; }
         }
 
+        /// <summary>
+        /// Gets the artist.
+        /// </summary>
         [EosProperty(Edsdk.PropID_Artist)]
         public string Artist
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_Artist); }
-        }        
+        }
 
+        /// <summary>
+        /// Gets the copyright.
+        /// </summary>
         [EosProperty(Edsdk.PropID_Copyright)]
         public string Copyright
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_Copyright); }
         }
 
+        /// <summary>
+        /// Gets the focus.
+        /// </summary>
         [EosProperty(Edsdk.PropID_FocusInfo)]
         public EosFocus Focus
         {
@@ -42,30 +51,54 @@ namespace Canon.Eos.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the firmware version.
+        /// </summary>
         [EosProperty(Edsdk.PropID_FirmwareVersion)]
         public string FirmwareVersion
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_FirmwareVersion); }
         }
 
+        /// <summary>
+        /// Gets the name of the owner.
+        /// </summary>
+        /// <value>
+        /// The name of the owner.
+        /// </value>
         [EosProperty(Edsdk.PropID_OwnerName)]
         public string OwnerName
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_OwnerName); }
         }
 
+        /// <summary>
+        /// Gets the name of the product.
+        /// </summary>
+        /// <value>
+        /// The name of the product.
+        /// </value>
         [EosProperty(Edsdk.PropID_ProductName)]
         public string ProductName
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_ProductName); }
-        }        
+        }
 
+        /// <summary>
+        /// Gets the serial number.
+        /// </summary>
         [EosProperty(Edsdk.PropID_BodyIDEx)]
         public string SerialNumber
         {
             get { return this.GetPropertyStringData(Edsdk.PropID_BodyIDEx); }
         }
 
+        /// <summary>
+        /// Gets or sets the white balance.
+        /// </summary>
+        /// <value>
+        /// The white balance.
+        /// </value>
         [EosProperty(Edsdk.PropID_WhiteBalance)]
         public EosWhiteBalance WhiteBalance
         {

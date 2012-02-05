@@ -9,6 +9,9 @@ namespace Canon.Eos.Framework
             this.PropertyId = propertyId;
         }
 
+        /// <summary>
+        /// Gets the property id.
+        /// </summary>
         public uint PropertyId { get; private set; }
     }
 }
