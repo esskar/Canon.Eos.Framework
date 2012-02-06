@@ -24,7 +24,7 @@ namespace Canon.Eos.Framework
                 this.LiveViewStopped(this, eventArgs);
         }
 
-        private void OnLiveViewUpdate(EosMemoryImageEventArgs eventArgs)
+        private void OnLiveViewUpdate(EosLiveImageEventArgs eventArgs)
         {
             if (this.LiveViewUpdate != null)
                 this.LiveViewUpdate(this, eventArgs);            

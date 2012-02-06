@@ -22,7 +22,7 @@ namespace Canon.Eos.Framework
 
         public event EventHandler LiveViewStarted;
         public event EventHandler LiveViewStopped;
-        public event EventHandler<EosMemoryImageEventArgs> LiveViewUpdate;
+        public event EventHandler<EosLiveImageEventArgs> LiveViewUpdate;
         public event EventHandler<EosImageEventArgs> PictureTaken;
         public event EventHandler Shutdown;        
         public event EventHandler<EosVolumeInfoEventArgs> VolumeInfoChanged;
@@ -403,7 +403,9 @@ namespace Canon.Eos.Framework
         {
             if (!this.IsInLiveViewMode)
                 this.IsInLiveViewMode = true;
-            this.LiveViewDevice = this.LiveViewDevice | EosLiveViewDevice.Host;
+            var device = this.LiveViewDevice;
+            device = device | EosLiveViewDevice.Host;
+            this.LiveViewDevice = device;
             return this.LiveViewAutoFocus;
         }
 
@@ -424,7 +426,7 @@ namespace Canon.Eos.Framework
         /// </summary>
         public void StopLiveView()
         {
-            this.LiveViewDevice = this.LiveViewDevice & ~EosLiveViewDevice.Host;
+            this.LiveViewDevice = EosLiveViewDevice.None;
         }
 
         /// <summary>
