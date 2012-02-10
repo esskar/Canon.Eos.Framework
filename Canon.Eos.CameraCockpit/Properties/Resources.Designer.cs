@@ -70,6 +70,15 @@ namespace Canon.Eos.CameraCockpit.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Live View Not Supported.
+        /// </summary>
+        internal static string LiveViewNotSupportedButtonLabel {
+            get {
+                return ResourceManager.GetString("LiveViewNotSupportedButtonLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start Live View.
         /// </summary>
         internal static string StartLiveViewButtonLabel {

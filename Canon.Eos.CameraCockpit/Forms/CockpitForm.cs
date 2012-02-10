@@ -58,14 +58,22 @@ namespace Canon.Eos.CameraCockpit.Forms
             else
             {
                 _liveViewButton.Enabled = true;
-                if (camera.IsInHostLiveViewMode)
+                try
                 {
-                    _liveViewButton.Text = Resources.StopLiveViewButtonLabel;
-                    _takePictureButton.Enabled = false;
+                    if (camera.IsInHostLiveViewMode)
+                    {
+                        _liveViewButton.Text = Resources.StopLiveViewButtonLabel;
+                        _takePictureButton.Enabled = false;
+                    }
+                    else
+                    {
+                        _liveViewButton.Text = Resources.StartLiveViewButtonLabel;
+                        _takePictureButton.Enabled = true;
+                    }
                 }
-                else
+                catch (EosException)
                 {
-                    _liveViewButton.Text = Resources.StartLiveViewButtonLabel;
+                    _liveViewButton.Text = Resources.LiveViewNotSupportedButtonLabel;
                     _takePictureButton.Enabled = true;
                 }
             }
