@@ -66,6 +66,7 @@
     <Compile Include="EosPropertyException.cs" />
     <Compile Include="EosVolumeInfo.cs" />
     <Compile Include="EosWhiteBalance.cs" />
+    <Compile Include="Eventing\EosExceptionEventArgs.cs" />
     <Compile Include="Eventing\EosFileImageEventArgs.cs" />
     <Compile Include="Eventing\EosImageEventArgs.cs" />
     <Compile Include="Eventing\EosLiveImageEventArgs.cs" />

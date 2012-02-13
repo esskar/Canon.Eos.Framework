@@ -9,14 +9,14 @@ namespace Canon.Eos.Framework.Internal
 {
     internal class EosImageTransporter : IEosAssertable
     {
-        private Edsdk.EdsDirectoryItemInfo GetGetDirectoryItemInfo(IntPtr directoryItem)
+        private static Edsdk.EdsDirectoryItemInfo GetDirectoryItemInfo(IntPtr directoryItem)
         {
             Edsdk.EdsDirectoryItemInfo directoryItemInfo;
             Util.Assert(Edsdk.EdsGetDirectoryItemInfo(directoryItem, out directoryItemInfo), "Failed to get directory item info.");
             return directoryItemInfo;
         }
 
-        private IntPtr CreateFileStream(string imageFilePath)
+        private static IntPtr CreateFileStream(string imageFilePath)
         {
             IntPtr stream;
             Util.Assert(Edsdk.EdsCreateFileStream(imageFilePath, Edsdk.EdsFileCreateDisposition.CreateAlways, 
@@ -24,14 +24,14 @@ namespace Canon.Eos.Framework.Internal
             return stream;    
         }
 
-        private IntPtr CreateMemoryStream(uint size)
+        private static IntPtr CreateMemoryStream(uint size)
         {
             IntPtr stream;
             Util.Assert(Edsdk.EdsCreateMemoryStream(size, out stream), "Failed to create memory stream");
             return stream;
         }
 
-        private void DestroyStream(ref IntPtr stream)
+        private static void DestroyStream(ref IntPtr stream)
         {
             if(stream != IntPtr.Zero)
             {
@@ -40,7 +40,7 @@ namespace Canon.Eos.Framework.Internal
             }
         }
 
-        private void Download(IntPtr directoryItem, uint size, IntPtr stream)
+        private static void Download(IntPtr directoryItem, uint size, IntPtr stream)
         {
             if (stream == IntPtr.Zero)
                 return;
@@ -59,11 +59,11 @@ namespace Canon.Eos.Framework.Internal
             }            
         }
 
-        private void Transport(IntPtr directoryItem, uint size, IntPtr stream, bool destroyStream)
+        private static void Transport(IntPtr directoryItem, uint size, IntPtr stream, bool destroyStream)
         {
             try
             {
-                this.Download(directoryItem, size, stream);
+                Download(directoryItem, size, stream);
             }
             catch (EosException)
             {
@@ -75,33 +75,33 @@ namespace Canon.Eos.Framework.Internal
             }
             finally
             {
-                if (destroyStream) this.DestroyStream(ref stream);
+                if (destroyStream) DestroyStream(ref stream);
             }
         }
 
         public EosImageEventArgs TransportAsFile(IntPtr directoryItem, string imageBasePath)
         {
-            var directoryItemInfo = this.GetGetDirectoryItemInfo(directoryItem);
+            var directoryItemInfo = GetDirectoryItemInfo(directoryItem);
             var imageFilePath = Path.Combine(imageBasePath ?? Environment.CurrentDirectory, directoryItemInfo.szFileName);
-            var stream = this.CreateFileStream(imageFilePath);
-            this.Transport(directoryItem, directoryItemInfo.Size, stream, true);            
+            var stream = CreateFileStream(imageFilePath);
+            Transport(directoryItem, directoryItemInfo.Size, stream, true);            
 
             return new EosFileImageEventArgs(imageFilePath);
         }
 
         public EosImageEventArgs TransportInMemory(IntPtr directoryItem)
         {
-            var directoryItemInfo = this.GetGetDirectoryItemInfo(directoryItem);
-            var stream = this.CreateMemoryStream(directoryItemInfo.Size);
+            var directoryItemInfo = GetDirectoryItemInfo(directoryItem);
+            var stream = CreateMemoryStream(directoryItemInfo.Size);
             try
             {
-                this.Transport(directoryItem, directoryItemInfo.Size, stream, false);           
+                Transport(directoryItem, directoryItemInfo.Size, stream, false);           
                 var converter = new EosConverter();
                 return new EosMemoryImageEventArgs(converter.ConvertImageStreamToBytes(stream));
             }
             finally
             {
-                this.DestroyStream(ref stream);
+                DestroyStream(ref stream);
             }
         }                
     }

@@ -26,6 +26,8 @@ namespace Canon.Eos.Framework
         public event EventHandler<EosImageEventArgs> PictureTaken;
         public event EventHandler Shutdown;        
         public event EventHandler<EosVolumeInfoEventArgs> VolumeInfoChanged;
+        public event EventHandler<EosExceptionEventArgs> Error;
+        
 
         internal EosCamera(IntPtr camera)
             : base(camera)
@@ -120,6 +122,8 @@ namespace Canon.Eos.Framework
             get { return EosImageQuality.Create(this.GetPropertyIntegerData(Edsdk.PropID_ImageQuality)); }
             set { this.SetPropertyIntegerData(Edsdk.PropID_ImageQuality, value.ToBitMask()); }
         }
+
+        public bool IsErrorTolerantMode { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is in live view mode.
@@ -289,20 +293,35 @@ namespace Canon.Eos.Framework
 
         protected override TResult ExecuteGetter<TResult>(Func<TResult> function)
         {
-            if (this.IsLegacy && !this.IsLocked)
-                return this.LockAndExceute(function);
-            return base.ExecuteGetter(function);
+            try
+            {
+                if (this.IsLegacy && !this.IsLocked)
+                    return this.LockAndExceute(function);
+                return base.ExecuteGetter(function);
+            }
+            catch (Exception ex)
+            {
+                this.OnError(ex);
+                return default(TResult);
+            }
         }
 
         protected override void ExecuteSetter(Action action)
         {
-            if (this.IsLegacy && !this.IsLocked)
+            try
             {
-                this.LockAndExceute(action);
-                return;
-            }
+                if (this.IsLegacy && !this.IsLocked)
+                {
+                    this.LockAndExceute(action);
+                    return;
+                }
 
-            base.ExecuteSetter(action);
+                base.ExecuteSetter(action);
+            }
+            catch (Exception ex)
+            {
+                this.OnError(ex);
+            }
         }
 
         private void Lock()
@@ -329,6 +348,19 @@ namespace Canon.Eos.Framework
             this.Lock();
             try { return function(); }
             finally { this.Unlock(); }
+        }
+
+        private void OnError(Exception exception)
+        {
+            if (!this.IsErrorTolerantMode)
+                throw exception;
+            this.OnError(new EosExceptionEventArgs { Exception = exception });
+        }
+
+        private void OnError(EosExceptionEventArgs args)
+        {
+            if (this.Error != null)
+                this.Error(this, args);
         }
 
 
