@@ -114,6 +114,7 @@ namespace Canon.Eos.CameraCockpit.Forms
                     camera.Shutdown += this.HandleCameraShutdown;
                     camera.PictureTaken += this.HandlePictureUpdate;
                     camera.LiveViewUpdate += this.HandlePictureUpdate;
+                    camera.LiveViewStopped += new EventHandler(camera_LiveViewStopped);
                     _cameraCollectionComboBox.Items.Add(camera);
                 }
                 if (_cameraCollectionComboBox.Items.Count > 0)
@@ -174,5 +175,10 @@ namespace Canon.Eos.CameraCockpit.Forms
                 this.UpdateCameraControls();
             }, ex => { });
         }
+
+        private void camera_LiveViewStopped(object sender, EventArgs e)
+        {
+            UpdateCameraControls();
+        } 
     }
 }

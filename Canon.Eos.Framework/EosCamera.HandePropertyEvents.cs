@@ -11,6 +11,7 @@ namespace Canon.Eos.Framework
     partial class EosCamera
     {        
         private bool _liveMode;
+        private bool _cancelLiveViewRequested;
 
         private void OnLiveViewStarted(EventArgs eventArgs)
         {
@@ -32,7 +33,7 @@ namespace Canon.Eos.Framework
 
         private bool DownloadEvf()
         {
-            if ((this.LiveViewDevice & EosLiveViewDevice.Host) == EosLiveViewDevice.None)
+            if ((this.LiveViewDevice & EosLiveViewDevice.Host) == EosLiveViewDevice.None || _cancelLiveViewRequested)
                 return false;
 
             var memoryStream = IntPtr.Zero;
@@ -73,7 +74,9 @@ namespace Canon.Eos.Framework
             backgroundWorker.Work(() =>
             {
                 while (this.DownloadEvf())
-                    Thread.Sleep(EosCamera.WaitTimeoutForNextLiveDownload);                
+                    Thread.Sleep(EosCamera.WaitTimeoutForNextLiveDownload);
+                
+                this.LiveViewDevice = EosLiveViewDevice.None;
             });
         }
 

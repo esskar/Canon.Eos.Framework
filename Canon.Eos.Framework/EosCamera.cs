@@ -435,6 +435,7 @@ namespace Canon.Eos.Framework
         {
             if (!this.IsInLiveViewMode)
                 this.IsInLiveViewMode = true;
+            this._cancelLiveViewRequested = false;
             var device = this.LiveViewDevice;
             device = device | EosLiveViewDevice.Host;
             this.LiveViewDevice = device;
@@ -458,7 +459,7 @@ namespace Canon.Eos.Framework
         /// </summary>
         public void StopLiveView()
         {
-            this.LiveViewDevice = EosLiveViewDevice.None;
+            this._cancelLiveViewRequested = true;
         }
 
         /// <summary>
