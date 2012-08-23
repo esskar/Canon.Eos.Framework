@@ -14,6 +14,7 @@ namespace Canon.Eos.Framework
         {
             if (this.PictureTaken != null)
                 this.PictureTaken(this, eventArgs);
+            _pauseLiveViewRequested = false;
         }
 
         private void OnVolumeInfoChanged(EosVolumeInfoEventArgs eventArgs)
