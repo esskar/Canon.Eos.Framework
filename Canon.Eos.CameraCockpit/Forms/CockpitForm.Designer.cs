@@ -32,6 +32,7 @@
         {
             this._pictureBox = new System.Windows.Forms.PictureBox();
             this._controlPanel = new System.Windows.Forms.Panel();
+            this._liveViewPictureButton = new System.Windows.Forms.Button();
             this._liveViewButton = new System.Windows.Forms.Button();
             this._selectCameraLabel = new System.Windows.Forms.Label();
             this._cameraCollectionComboBox = new System.Windows.Forms.ComboBox();
@@ -40,6 +41,7 @@
             this._storePicturesOnHostRadioButton = new System.Windows.Forms.RadioButton();
             this._picturesOnHostLocationTextBox = new System.Windows.Forms.TextBox();
             this._browsePicturesOnHostLocationButton = new System.Windows.Forms.Button();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
             this._controlPanel.SuspendLayout();
             this.SuspendLayout();
@@ -61,6 +63,7 @@
             // 
             this._controlPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this._controlPanel.Controls.Add(this._liveViewPictureButton);
             this._controlPanel.Controls.Add(this._liveViewButton);
             this._controlPanel.Controls.Add(this._selectCameraLabel);
             this._controlPanel.Controls.Add(this._cameraCollectionComboBox);
@@ -69,6 +72,17 @@
             this._controlPanel.Name = "_controlPanel";
             this._controlPanel.Size = new System.Drawing.Size(200, 504);
             this._controlPanel.TabIndex = 1;
+            // 
+            // _liveViewPictureButton
+            // 
+            this._liveViewPictureButton.Enabled = false;
+            this._liveViewPictureButton.Location = new System.Drawing.Point(-1, 198);
+            this._liveViewPictureButton.Name = "_liveViewPictureButton";
+            this._liveViewPictureButton.Size = new System.Drawing.Size(197, 69);
+            this._liveViewPictureButton.TabIndex = 4;
+            this._liveViewPictureButton.Text = "Take Liveview Picture ";
+            this._liveViewPictureButton.UseVisualStyleBackColor = true;
+            this._liveViewPictureButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // _liveViewButton
             // 
@@ -112,7 +126,6 @@
             // 
             this._storePicturesOnCameraRadioButton.AutoSize = true;
             this._storePicturesOnCameraRadioButton.Checked = true;
-            this._storePicturesOnCameraRadioButton.Enabled = false;
             this._storePicturesOnCameraRadioButton.Location = new System.Drawing.Point(12, 15);
             this._storePicturesOnCameraRadioButton.Name = "_storePicturesOnCameraRadioButton";
             this._storePicturesOnCameraRadioButton.Size = new System.Drawing.Size(145, 17);
@@ -120,11 +133,11 @@
             this._storePicturesOnCameraRadioButton.TabStop = true;
             this._storePicturesOnCameraRadioButton.Text = "Store Pictures on Camera";
             this._storePicturesOnCameraRadioButton.UseVisualStyleBackColor = true;
+            this._storePicturesOnCameraRadioButton.CheckedChanged += new System.EventHandler(this._storePicturesOnCameraRadioButton_CheckedChanged);
             // 
             // _storePicturesOnHostRadioButton
             // 
             this._storePicturesOnHostRadioButton.AutoSize = true;
-            this._storePicturesOnHostRadioButton.Enabled = false;
             this._storePicturesOnHostRadioButton.Location = new System.Drawing.Point(12, 38);
             this._storePicturesOnHostRadioButton.Name = "_storePicturesOnHostRadioButton";
             this._storePicturesOnHostRadioButton.Size = new System.Drawing.Size(131, 17);
@@ -134,21 +147,21 @@
             // 
             // _picturesOnHostLocationTextBox
             // 
-            this._picturesOnHostLocationTextBox.Enabled = false;
             this._picturesOnHostLocationTextBox.Location = new System.Drawing.Point(30, 60);
             this._picturesOnHostLocationTextBox.Name = "_picturesOnHostLocationTextBox";
             this._picturesOnHostLocationTextBox.Size = new System.Drawing.Size(525, 20);
             this._picturesOnHostLocationTextBox.TabIndex = 4;
+            this._picturesOnHostLocationTextBox.Text = "c:\\canonimages";
             // 
             // _browsePicturesOnHostLocationButton
             // 
-            this._browsePicturesOnHostLocationButton.Enabled = false;
             this._browsePicturesOnHostLocationButton.Location = new System.Drawing.Point(561, 60);
             this._browsePicturesOnHostLocationButton.Name = "_browsePicturesOnHostLocationButton";
             this._browsePicturesOnHostLocationButton.Size = new System.Drawing.Size(46, 20);
             this._browsePicturesOnHostLocationButton.TabIndex = 5;
             this._browsePicturesOnHostLocationButton.Text = "...";
             this._browsePicturesOnHostLocationButton.UseVisualStyleBackColor = true;
+            this._browsePicturesOnHostLocationButton.Click += new System.EventHandler(this._browsePicturesOnHostLocationButton_Click);
             // 
             // CockpitForm
             // 
@@ -184,6 +197,8 @@
         private System.Windows.Forms.Label _selectCameraLabel;
         private System.Windows.Forms.ComboBox _cameraCollectionComboBox;
         private System.Windows.Forms.Button _liveViewButton;
+        private System.Windows.Forms.Button _liveViewPictureButton;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 

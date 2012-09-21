@@ -23,6 +23,7 @@ namespace Canon.Eos.Framework
         public event EventHandler LiveViewStarted;
         public event EventHandler LiveViewStopped;
         public event EventHandler<EosLiveImageEventArgs> LiveViewUpdate;
+        public event EventHandler LiveViewPaused;
         public event EventHandler<EosImageEventArgs> PictureTaken;
         public event EventHandler Shutdown;        
         public event EventHandler<EosVolumeInfoEventArgs> VolumeInfoChanged;
@@ -435,6 +436,7 @@ namespace Canon.Eos.Framework
         {
             if (!this.IsInLiveViewMode)
                 this.IsInLiveViewMode = true;
+            this._cancelLiveViewRequested = false;
             var device = this.LiveViewDevice;
             device = device | EosLiveViewDevice.Host;
             this.LiveViewDevice = device;
@@ -458,12 +460,13 @@ namespace Canon.Eos.Framework
         /// </summary>
         public void StopLiveView()
         {
-            this.LiveViewDevice = EosLiveViewDevice.None;
+            this._cancelLiveViewRequested = true;
         }
 
         /// <summary>
         /// Takes the picture.
         /// </summary>
+
         public void TakePicture()
         {
             if (this.IsLegacy && !this.IsLocked)
@@ -472,8 +475,20 @@ namespace Canon.Eos.Framework
                 return;
             }
 
-            Util.Assert(this.SendCommand(Edsdk.CameraCommand_TakePicture), 
-                "Failed to take picture.");                                 
+            Util.Assert(this.SendCommand(Edsdk.CameraCommand_TakePicture),
+                "Failed to take picture.");
+        }
+
+        public void TakePictureInLiveview()
+        {
+            this._pauseLiveViewRequested = true;
+
+        }
+        public void ResumeLiveview()
+        {
+            //has to be called if Taking photo fails
+            this._pauseLiveViewRequested = false;
+
         }
 
         public override string ToString()

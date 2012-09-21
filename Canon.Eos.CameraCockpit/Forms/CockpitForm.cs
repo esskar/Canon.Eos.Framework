@@ -63,11 +63,13 @@ namespace Canon.Eos.CameraCockpit.Forms
                     {
                         _liveViewButton.Text = Resources.StopLiveViewButtonLabel;
                         _takePictureButton.Enabled = false;
+                        _liveViewPictureButton.Enabled = true;
                     }
                     else
                     {
                         _liveViewButton.Text = Resources.StartLiveViewButtonLabel;
                         _takePictureButton.Enabled = true;
+                        _liveViewPictureButton.Enabled = false;
                     }
                     _liveViewButton.Enabled = true;                
                 }
@@ -114,6 +116,9 @@ namespace Canon.Eos.CameraCockpit.Forms
                     camera.Shutdown += this.HandleCameraShutdown;
                     camera.PictureTaken += this.HandlePictureUpdate;
                     camera.LiveViewUpdate += this.HandlePictureUpdate;
+                    camera.LiveViewStopped += new EventHandler(camera_LiveViewStopped);
+                    camera.LiveViewPaused += new EventHandler(camera_LiveViewPaused);
+                    
                     _cameraCollectionComboBox.Items.Add(camera);
                 }
                 if (_cameraCollectionComboBox.Items.Count > 0)
@@ -169,10 +174,80 @@ namespace Canon.Eos.CameraCockpit.Forms
                     return;
 
                 if (camera.IsInHostLiveViewMode) camera.StopLiveView();
-                else camera.StartLiveView();
+                else camera.StartLiveView(EosLiveViewAutoFocus.QuickMode);
 
                 this.UpdateCameraControls();
             }, ex => { });
+        }
+
+        private void camera_LiveViewStopped(object sender, EventArgs e)
+        {
+            UpdateCameraControls();
+        }
+
+        private void camera_LiveViewResume()
+        {
+            this.SafeCall(() =>
+            {
+                var camera = this.GetSelectedCamera();
+                if (camera != null)
+                    camera.ResumeLiveview();
+            }, ex =>
+            {
+                MessageBox.Show(ex.ToString(), Resources.TakePictureError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
+        }
+
+        public void camera_LiveViewPaused(object sender, EventArgs e)
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new Action(() => this.camera_LiveViewPaused(sender,e)));
+            else
+                this.SafeCall(() =>
+                {
+                    var camera = this.GetSelectedCamera();
+                    if (camera != null)
+                        camera.TakePicture();
+                }, ex => { MessageBox.Show(ex.ToString(), Resources.TakePictureError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        camera_LiveViewResume();  
+                    });
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.SafeCall(() =>
+            {
+                var camera = this.GetSelectedCamera();
+                if (camera != null)
+                    camera.TakePictureInLiveview();
+            }, ex => MessageBox.Show(ex.ToString(), Resources.TakePictureError, MessageBoxButtons.OK, MessageBoxIcon.Error));
+        }
+
+        private void _storePicturesOnCameraRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SafeCall(() =>
+            {
+                var camera = this.GetSelectedCamera();
+                if (camera != null)
+                {
+                    if (_storePicturesOnCameraRadioButton.Checked){
+                        camera.SavePicturesToCamera();
+                    }else{
+                        camera.SavePicturesToHost(_picturesOnHostLocationTextBox.Text);
+                    }
+                }
+            }, ex => MessageBox.Show(ex.ToString(), "Problem setting Savelocation", MessageBoxButtons.OK, MessageBoxIcon.Error));
+                    
+        }
+
+        private void _browsePicturesOnHostLocationButton_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = folderBrowserDialog1.ShowDialog(this);
+            if (dr.Equals(DialogResult.OK))
+            {
+                _picturesOnHostLocationTextBox.Text = folderBrowserDialog1.SelectedPath;
+                _storePicturesOnCameraRadioButton_CheckedChanged(null, null);
+            }
         }
     }
 }
